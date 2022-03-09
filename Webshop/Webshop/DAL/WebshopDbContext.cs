@@ -14,6 +14,7 @@ namespace Webshop.DAL
         }
 
         public virtual DbSet<Address> Address { get; set; }
+        public virtual DbSet<Category> Category { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,6 +35,13 @@ namespace Webshop.DAL
                 entity.Property(e => e.ZipCode).HasMaxLength(10);
                 entity.Property(e => e.City).HasMaxLength(50);
                 entity.Property(e => e.Street).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
         }
     }
