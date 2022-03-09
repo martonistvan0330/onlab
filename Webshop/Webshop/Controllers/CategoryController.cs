@@ -13,13 +13,13 @@ namespace Webshop.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string[]> List()
+        public ActionResult<Models.Category[]> List()
         {
             IQueryable<DAL.Category> filteredList;
-            filteredList = dbContext.Category.Where(c => c.ParentCategoryId == null);
+            filteredList = dbContext.Category.Where(c => c.ParentCategory == null);
 
             return filteredList
-                    .Select(c => c.Name)
+                    .Select(c => new Models.Category(c.Id, c.Name))
                     .ToArray();
         }
     }

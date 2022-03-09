@@ -42,6 +42,12 @@ namespace Webshop.DAL
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.ParentCategoryId).HasColumnName("ParentCategoryID");
+
+                entity.HasOne(d => d.ParentCategory)
+                    .WithMany(p => p.InverseParentCategory)
+                    .HasForeignKey(d => d.ParentCategoryId);
             });
         }
     }
