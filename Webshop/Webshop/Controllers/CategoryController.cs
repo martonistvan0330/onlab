@@ -12,13 +12,22 @@ namespace Webshop.Controllers
             this.dbContext = dbContext;
         }
 
-        [HttpGet]
-        public ActionResult<Models.Category[]> List()
+        [HttpGet("main")]
+        public ActionResult<Models.Category[]> GetMainCategories()
         {
-            IQueryable<DAL.Category> filteredList;
-            filteredList = dbContext.Category.Where(c => c.ParentCategory == null);
+            var mainCategories = dbContext.Category.Where(c => c.ParentCategory == null);
 
-            return filteredList
+            return mainCategories
+                    .Select(c => new Models.Category(c.Id, c.Name))
+                    .ToArray();
+        }
+
+        [HttpGet("{parentCategoryId}")]
+        public ActionResult<Models.Category[]> GetSubCategories([FromRoute] int parentCategoryId)
+        {
+            var categories = dbContext.Category.Where(c => c.ParentCategoryId == parentCategoryId);
+            
+            return categories
                     .Select(c => new Models.Category(c.Id, c.Name))
                     .ToArray();
         }

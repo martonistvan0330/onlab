@@ -41,8 +41,7 @@ namespace Webshop.DAL
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.Name).HasMaxLength(50);
-
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.ParentCategoryId).HasColumnName("ParentCategoryID");
 
                 entity.HasOne(d => d.ParentCategory)
