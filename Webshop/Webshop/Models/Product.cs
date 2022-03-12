@@ -1,12 +1,14 @@
 ﻿namespace Webshop.Models
 {
-    public class MainPageProduct
+    public class Product
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
 
-        public MainPageProduct(int id, string name, double price)
+        public Product() { }
+
+        public Product(int id, string name, double price)
         {
             Id = id;
             Name = name;
