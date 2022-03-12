@@ -15,6 +15,8 @@ namespace Webshop.DAL
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Product> Product { get; set; }
+        public virtual DbSet<Vat> Vat { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -47,6 +49,31 @@ namespace Webshop.DAL
                 entity.HasOne(d => d.ParentCategory)
                     .WithMany(p => p.InverseParentCategory)
                     .HasForeignKey(d => d.ParentCategoryId);
+            });
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
+                entity.Property(e => e.VatId).HasColumnName("VATID");
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.CategoryId);
+
+                entity.HasOne(d => d.Vat)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.VatId);
+            });
+
+            modelBuilder.Entity<Vat>(entity =>
+            {
+                entity.ToTable("VAT");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.Percentage).IsRequired().HasMaxLength(50);
             });
         }
     }

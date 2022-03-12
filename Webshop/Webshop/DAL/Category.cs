@@ -6,6 +6,7 @@
         {
             Name = name;
             InverseParentCategory = new HashSet<Category>();
+            Products = new HashSet<Product>();
         }
 
         public int Id { get; set; }
@@ -14,5 +15,6 @@
 
         public Category? ParentCategory { get; set; }
         public ICollection<Category> InverseParentCategory { get; set; }
+        public ICollection<Product> Products { get; set; }
     }
 }
