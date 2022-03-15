@@ -15,9 +15,11 @@ namespace Webshop.DAL
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductStock> ProductStock { get; set; }
         public virtual DbSet<Size> Size { get; set; }
+        public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Vat> Vat { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -51,6 +53,20 @@ namespace Webshop.DAL
                 entity.HasOne(d => d.ParentCategory)
                     .WithMany(p => p.InverseParentCategory)
                     .HasForeignKey(d => d.ParentCategoryId);
+            });
+
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+                entity.Property(e => e.Name).HasMaxLength(50);
+                entity.Property(e => e.PhoneNumber).HasMaxLength(20);
+                entity.Property(e => e.MainCustomer).HasColumnType("bit");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Customers)
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -90,6 +106,14 @@ namespace Webshop.DAL
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Password).IsRequired().HasMaxLength(50);
             });
 
             modelBuilder.Entity<Vat>(entity =>

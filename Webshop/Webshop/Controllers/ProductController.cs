@@ -88,18 +88,16 @@ namespace Webshop.Controllers
         [HttpGet("{productId}")]
         public ActionResult<Models.ProductDetails> GetProduct([FromRoute] int productId)
         {
-            var product = dbContext.Product
-                .Where(p => p.Id == productId)
-                .Select(p => new Models.ProductDetails()
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                })
-                .SingleOrDefault();
-            if (product != null)
+            var dbProduct = dbContext.Product.SingleOrDefault(p => p.Id == productId);
+
+            if (dbProduct != null)
             {
-                return product;
+                return new Models.ProductDetails()
+                {
+                    Id = dbProduct.Id,
+                    Name = dbProduct.Name,
+                    Price = dbProduct.Price,
+                };
             }
             else
             {
