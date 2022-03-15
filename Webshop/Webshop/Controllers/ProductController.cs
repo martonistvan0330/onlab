@@ -65,8 +65,8 @@ namespace Webshop.Controllers
             }
 
             var products = filteredProducts
-                    .Skip((page-1)*2)
-                    .Take(2)
+                    .Skip((page - 1) * 6)
+                    .Take(6)
                     .Select(p => new Models.Product()
                     {
                         Id = p.Id,
@@ -85,8 +85,30 @@ namespace Webshop.Controllers
             }
         }
 
+        [HttpGet("{productId}")]
+        public ActionResult<Models.ProductDetails> GetProduct([FromRoute] int productId)
+        {
+            var product = dbContext.Product
+                .Where(p => p.Id == productId)
+                .Select(p => new Models.ProductDetails()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                })
+                .SingleOrDefault();
+            if (product != null)
+            {
+                return product;
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [HttpGet("{productId}/sizes")]
-        public ActionResult<string[]> GetSizes([FromRoute] int productId)
+        public ActionResult<string[]> GetProductSizes([FromRoute] int productId)
         {
             var sizes = dbContext.ProductStock
                 .Where(ps => ps.Product.Id == productId)
@@ -103,7 +125,7 @@ namespace Webshop.Controllers
         }
 
         [HttpGet("{productId}/stock")]
-        public ActionResult<int> GetStock([FromRoute] int productId, [FromQuery] string size)
+        public ActionResult<int> GetProductStock([FromRoute] int productId, [FromQuery] string size)
         {
             var product = dbContext.ProductStock
                 .Where(ps => ps.Product.Id == productId)
