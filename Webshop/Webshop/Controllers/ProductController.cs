@@ -41,7 +41,7 @@ namespace Webshop.Controllers
         }
 
         [HttpGet]
-        public ActionResult<Models.Product[]> GetProducts([FromQuery] int categoryId, [FromQuery] double minPrice, [FromQuery] double maxPrice, [FromQuery] string? sizes)
+        public ActionResult<Models.Product[]> GetProducts([FromQuery] int categoryId = 0, [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 0, [FromQuery] string? sizes = null, [FromQuery] int page = 1)
         {
             
             var categoryIds = dbContext.Category
@@ -49,19 +49,24 @@ namespace Webshop.Controllers
                 .Select(c => c.Id)
                 .ToArray();
 
-            string[] sizeArray = sizes.Split(',');
-
             var filteredProducts = dbContext.Product
                 .Where(p => categoryIds.Contains(p.Category.Id))
-                .Where(p => p.Price >= minPrice)
-                .Where(p => p.ProductStocks.Any(ps => sizeArray.Contains(ps.Size.Name) && ps.Stock > 0));
+                .Where(p => p.Price >= minPrice);
+
+            if (sizes != null)
+            {
+                string[] sizeArray = sizes.Split(',');
+                filteredProducts = filteredProducts.Where(p => p.ProductStocks.Any(ps => sizeArray.Contains(ps.Size.Name) && ps.Stock > 0));
+            }
 
             if (maxPrice > 0)
             {
                 filteredProducts = filteredProducts.Where(p => p.Price <= maxPrice);
             }
 
-            return filteredProducts
+            var products = filteredProducts
+                    .Skip((page-1)*2)
+                    .Take(2)
                     .Select(p => new Models.Product()
                     {
                         Id = p.Id,
@@ -69,6 +74,15 @@ namespace Webshop.Controllers
                         Price = p.Price,
                     })
                     .ToArray();
+            
+            if (products.Length > 0)
+            {
+                return products;
+            }
+            else
+            {
+                return NoContent();
+            }
         }
 
         [HttpGet("{productId}/sizes")]
