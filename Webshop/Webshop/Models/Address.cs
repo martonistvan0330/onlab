@@ -2,23 +2,25 @@
 {
     public class Address
     {
-        public int Id { get; set; }
-        public string? Name { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string Country { get; set; }
         public string Region { get; set; }
         public string City { get; set; }
         public string ZipCode { get; set; }
         public string Street { get; set; }
+        public string PhoneNumber { get; set; }
 
-        public Address(int id, string? name, string country, string region, string city, string zipCode, string street)
+        public Address(string firstName, string lastName, string country, string region, string city, string zipCode, string street, string phoneNumber)
         {
-            Id = id;
-            Name = name;
+            FirstName = firstName;
+            LastName = lastName;
             Country = country;
             Region = region;
             City = city;
             ZipCode = zipCode;
             Street = street;
+            PhoneNumber = phoneNumber;
         }
     }
 }

@@ -12,27 +12,76 @@ namespace Webshop.Controllers
             this.dbContext = dbContext;
         }
 
-        [HttpGet("{customerId}")]
-        public ActionResult<Models.Customer> GetCustomer([FromRoute] int customerId)
+        [HttpPost]
+        public ActionResult AddCustomer([FromBody] Models.Customer customer)
         {
-            var dbCustomer = dbContext.Customer.SingleOrDefault(c => c.Id == customerId);
+            bool isNewMainCustomer = !dbContext.Customer.Any(c => c.MainCustomer == true && c.UserId == customer.UserId);
 
-            if (dbCustomer != null)
+            var shippingAddress = customer.ShippingInfo.ShippingAddress;
+
+            var dbShippingAddress = new DAL.Address()
             {
-                return new Models.Customer()
-                {
-                    Id = dbCustomer.Id,
-                    Email = dbCustomer.User.Email,
-                    Username = dbCustomer.User.Username,
-                    Password = dbCustomer.User.Password,
-                    Name = dbCustomer.Name,
-                    PhoneNumber = dbCustomer.PhoneNumber,
-                };
-            }
-            else
+                FirstName = shippingAddress.FirstName,
+                LastName = shippingAddress.LastName,
+                Country = shippingAddress.Country,
+                Region = shippingAddress.Region,
+                City = shippingAddress.City,
+                ZipCode = shippingAddress.ZipCode,
+                Street = shippingAddress.Street,
+                PhoneNumber = shippingAddress.PhoneNumber,
+            };
+            
+            dbContext.Address.Add(dbShippingAddress);
+            dbContext.SaveChanges();
+
+            var dbShippingInfo = new DAL.ShippingInfo()
             {
-                return NotFound();
-            }
+                ShippingMethodId = customer.ShippingInfo.Method.Id,
+                ShippingAddressId = dbShippingAddress.Id,
+            };
+
+            dbContext.ShippingInfo.Add(dbShippingInfo);
+            dbContext.SaveChanges();
+
+            var billingAddress = customer.PaymentInfo.BillingAddress;
+
+            var dbBillingAddress = new DAL.Address()
+            {
+                FirstName = billingAddress.FirstName,
+                LastName = billingAddress.LastName,
+                Country = billingAddress.Country,
+                Region = billingAddress.Region,
+                City = billingAddress.City,
+                ZipCode = billingAddress.ZipCode,
+                Street = billingAddress.Street,
+                PhoneNumber = billingAddress.PhoneNumber,
+            };
+
+            dbContext.Address.Add(dbBillingAddress);
+            dbContext.SaveChanges();
+
+            var dbPaymentInfo = new DAL.PaymentInfo()
+            {
+                PaymentMethodId = customer.PaymentInfo.Method.Id,
+                BillingAddressId = dbBillingAddress.Id,
+            };
+
+            dbContext.PaymentInfo.Add(dbPaymentInfo);
+            dbContext.SaveChanges();
+
+            var dbCustomer = new DAL.Customer()
+            {
+                UserId = customer.UserId,
+                Name = customer.Name,
+                ShippingInfoId = dbShippingInfo.Id,
+                PaymentInfoId = dbPaymentInfo.Id,
+                MainCustomer = isNewMainCustomer,
+            };
+
+            dbContext.Customer.Add(dbCustomer);
+            dbContext.SaveChanges();
+
+            return Ok();
         }
     }
 }

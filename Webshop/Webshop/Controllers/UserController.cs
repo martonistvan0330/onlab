@@ -44,7 +44,7 @@ namespace Webshop.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest("wrong username or password");
             }
         }
 

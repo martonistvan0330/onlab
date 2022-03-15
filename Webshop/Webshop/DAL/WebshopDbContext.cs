@@ -16,8 +16,12 @@ namespace Webshop.DAL
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Customer> Customer { get; set; }
+        public virtual DbSet<PaymentInfo> PaymentInfo { get; set; }
+        public virtual DbSet<PaymentMethod> PaymentMethod { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductStock> ProductStock { get; set; }
+        public virtual DbSet<ShippingInfo> ShippingInfo { get; set; }
+        public virtual DbSet<ShippingMethod> ShippingMethod { get; set; }
         public virtual DbSet<Size> Size { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Vat> Vat { get; set; }
@@ -35,12 +39,14 @@ namespace Webshop.DAL
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.Name).HasMaxLength(50);
+                entity.Property(e => e.FirstName).HasMaxLength(50);
+                entity.Property(e => e.LastName).HasMaxLength(50);
                 entity.Property(e => e.Country).HasMaxLength(50);
                 entity.Property(e => e.Region).HasMaxLength(50);
                 entity.Property(e => e.ZipCode).HasMaxLength(10);
                 entity.Property(e => e.City).HasMaxLength(50);
                 entity.Property(e => e.Street).HasMaxLength(50);
+                entity.Property(e => e.PhoneNumber).HasMaxLength(20);
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -61,12 +67,41 @@ namespace Webshop.DAL
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
                 entity.Property(e => e.Name).HasMaxLength(50);
-                entity.Property(e => e.PhoneNumber).HasMaxLength(20);
                 entity.Property(e => e.MainCustomer).HasColumnType("bit");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Customers)
                     .HasForeignKey(d => d.UserId);
+
+                entity.HasOne(d => d.ShippingInfo)
+                    .WithMany(p => p.Customers)
+                    .HasForeignKey(d => d.ShippingInfoId);
+
+                entity.HasOne(d => d.PaymentInfo)
+                    .WithMany(p => p.Customers)
+                    .HasForeignKey(d => d.PaymentInfoId);
+            });
+
+            modelBuilder.Entity<PaymentInfo>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.PaymentMethodId).HasColumnName("PaymentMethodID");
+                entity.Property(e => e.BillingAddressId).HasColumnName("BillingAddressID");
+
+                entity.HasOne(d => d.PaymentMethod)
+                    .WithMany(p => p.PaymentInfos)
+                    .HasForeignKey(d => d.PaymentMethodId);
+
+                entity.HasOne(d => d.BillingAddress)
+                    .WithMany(p => p.PaymentInfos)
+                    .HasForeignKey(d => d.BillingAddressId);
+            });
+
+            modelBuilder.Entity<PaymentMethod>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Method).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -99,6 +134,28 @@ namespace Webshop.DAL
                 entity.HasOne(d => d.Size)
                     .WithMany(p => p.ProductStocks)
                     .HasForeignKey(d => d.SizeId);
+            });
+
+            modelBuilder.Entity<ShippingInfo>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.ShippingMethodId).HasColumnName("ShippingMethodID");
+                entity.Property(e => e.ShippingAddressId).HasColumnName("ShippingAddressID");
+
+                entity.HasOne(d => d.ShippingMethod)
+                    .WithMany(p => p.ShippingInfos)
+                    .HasForeignKey(d => d.ShippingMethodId);
+
+                entity.HasOne(d => d.ShippingAddress)
+                    .WithMany(p => p.ShippingInfos)
+                    .HasForeignKey(d => d.ShippingAddressId);
+            });
+
+            modelBuilder.Entity<ShippingMethod>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Method).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Size>(entity =>

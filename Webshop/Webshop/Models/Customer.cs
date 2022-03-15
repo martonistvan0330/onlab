@@ -2,14 +2,19 @@
 {
     public class Customer
     {
-        public int Id { get; set; }
         public int UserId { get; set; }
-        public string Email { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string? Name { get; set; }
-        public string? PhoneNumber { get; set; }
+        public string Name { get; set; }
+        public ShippingInfo ShippingInfo { get; set; }
+        public PaymentInfo PaymentInfo { get; set; }
 
         public Customer() { }
+
+        public Customer(int userId, string name, ShippingInfo shippingInfo, PaymentInfo paymentInfo) : this() 
+        {
+            UserId = userId;
+            Name = name;
+            ShippingInfo = shippingInfo;
+            PaymentInfo = paymentInfo;
+        }
     }
 }
