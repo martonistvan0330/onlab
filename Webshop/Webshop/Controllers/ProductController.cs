@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Webshop.DAL.EF;
 
 namespace Webshop.Controllers
 {
@@ -7,8 +8,8 @@ namespace Webshop.Controllers
     [ApiController]
     public class ProductController : Controller
     {
-        private readonly DAL.WebshopDbContext dbContext;
-        public ProductController(DAL.WebshopDbContext dbContext)
+        private readonly WebshopDbContext dbContext;
+        public ProductController(WebshopDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

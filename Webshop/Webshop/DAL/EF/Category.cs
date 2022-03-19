@@ -1,4 +1,4 @@
-﻿namespace Webshop.DAL
+﻿namespace Webshop.DAL.EF
 {
     public class Category
     {

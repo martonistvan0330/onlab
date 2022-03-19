@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Webshop.DAL.EF;
 
 namespace Webshop.Controllers
 {
@@ -6,8 +7,8 @@ namespace Webshop.Controllers
     [ApiController]
     public class CustomerController : Controller
     {
-        private readonly DAL.WebshopDbContext dbContext;
-        public CustomerController(DAL.WebshopDbContext dbContext)
+        private readonly WebshopDbContext dbContext;
+        public CustomerController(WebshopDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

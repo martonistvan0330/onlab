@@ -1,4 +1,8 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+using Webshop.BL;
+using Webshop.DAL.EF;
+using Webshop.DAL.Repositories;
+using Webshop.DAL.Repositories.Interfaces;
 
 namespace Webshop
 {
@@ -13,8 +17,13 @@ namespace Webshop
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<WebshopDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("WebshopDb")));
+
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+
+            services.AddTransient<CategoryManager>();
+
             services.AddControllers().AddNewtonsoftJson();
-            services.AddDbContext<DAL.WebshopDbContext>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

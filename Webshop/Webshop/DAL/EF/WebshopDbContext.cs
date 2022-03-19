@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Webshop.DAL
+namespace Webshop.DAL.EF
 {
     public class WebshopDbContext : DbContext
     {
@@ -26,11 +26,6 @@ namespace Webshop.DAL
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Vat> Vat { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Webshop;Trusted_Connection=True;");
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -51,6 +46,8 @@ namespace Webshop.DAL
 
             modelBuilder.Entity<Category>(entity =>
             {
+                entity.ToTable("Category");
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
