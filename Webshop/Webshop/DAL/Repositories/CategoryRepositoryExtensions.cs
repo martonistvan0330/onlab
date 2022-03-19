@@ -25,5 +25,10 @@ namespace Webshop.DAL.Repositories
         {
             return new Models.Category(dbRecord.Name);
         }
+
+        public static Category? GetByNameOrNull(this IQueryable<Category> categories, string categoryName)
+        {
+            return categories.SingleOrDefault(c => c.Name.Equals(categoryName));
+        }
     }
 }

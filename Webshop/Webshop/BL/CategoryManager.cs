@@ -14,5 +14,8 @@ namespace Webshop.BL
 
         public async Task<IReadOnlyCollection<Category>> ListMainCategories()
             => await categoryRepository.ListMainCategories();
+
+        public async Task<IReadOnlyCollection<Category>> ListSubcategoriesByParentCategory(string parentCategoryName)
+            => await categoryRepository.ListSubcategoriesByParentCategory(parentCategoryName);
     }
 }

@@ -16,5 +16,21 @@ namespace Webshop.DAL.Repositories
                 .FindMainCategories()
                 .GetCategories();
         }
+
+        public async Task<IReadOnlyCollection<Models.Category>> ListSubcategoriesByParentCategory(string parentCategoryName)
+        {
+            var parentCategory = dbContext.Category
+                                    .GetByNameOrNull(parentCategoryName);
+            if(parentCategory == null)
+            {
+                return Array.Empty<Models.Category>();
+            }
+            else
+            {
+                return await dbContext.Category
+                .FindCategoriesByParentCategory(parentCategory)
+                .GetCategories();
+            }
+        }
     }
 }
