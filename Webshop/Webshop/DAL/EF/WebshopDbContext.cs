@@ -32,6 +32,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Address>(entity =>
             {
+                entity.ToTable(nameof(Address));
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.FirstName).HasMaxLength(50);
@@ -46,7 +48,7 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Category>(entity =>
             {
-                entity.ToTable("Category");
+                entity.ToTable(nameof(Category));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
@@ -60,6 +62,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Customer>(entity =>
             {
+                entity.ToTable(nameof(Customer));
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
@@ -81,6 +85,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<PaymentInfo>(entity =>
             {
+                entity.ToTable(nameof(PaymentInfo));
+
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.PaymentMethodId).HasColumnName("PaymentMethodID");
                 entity.Property(e => e.BillingAddressId).HasColumnName("BillingAddressID");
@@ -96,6 +102,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<PaymentMethod>(entity =>
             {
+                entity.ToTable(nameof(PaymentMethod));
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Method).HasMaxLength(50);
@@ -103,7 +111,7 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.ToTable("Product");
+                entity.ToTable(nameof(Product));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
@@ -122,7 +130,7 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<ProductStock>(entity =>
             {
-                entity.ToTable("ProductStock");
+                entity.ToTable(nameof(ProductStock));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
@@ -139,6 +147,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<ShippingInfo>(entity =>
             {
+                entity.ToTable(nameof(ShippingInfo));
+
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.ShippingMethodId).HasColumnName("ShippingMethodID");
                 entity.Property(e => e.ShippingAddressId).HasColumnName("ShippingAddressID");
@@ -154,6 +164,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<ShippingMethod>(entity =>
             {
+                entity.ToTable(nameof(ShippingMethod));
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Method).HasMaxLength(50);
@@ -161,7 +173,7 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Size>(entity =>
             {
-                entity.ToTable("Size");
+                entity.ToTable(nameof(Size));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
@@ -170,6 +182,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<User>(entity =>
             {
+                entity.ToTable(nameof(User));
+
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
@@ -178,7 +192,7 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Vat>(entity =>
             {
-                entity.ToTable("VAT");
+                entity.ToTable(nameof(Vat).ToUpper());
 
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.Percentage).IsRequired().HasMaxLength(50);

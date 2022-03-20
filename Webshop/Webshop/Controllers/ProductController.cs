@@ -37,6 +37,8 @@ namespace Webshop.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<ProductDetails>> GetProduct([FromQuery] string productName)
         {
             var product = await productManager.GetProductDetailsOrNull(productName);
@@ -52,6 +54,8 @@ namespace Webshop.Controllers
         }
 
         [HttpGet("sizes")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<IReadOnlyCollection<string>>> GetProductSizes([FromQuery] string productName)
         {
             var sizes = await productManager.GetSizesByName(productName);
@@ -66,6 +70,8 @@ namespace Webshop.Controllers
         }
 
         [HttpGet("sizes/stock")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<IReadOnlyCollection<ProductStock>>> GetProductStocks([FromQuery] string productName)
         {
             var sizes = await productManager.GetStocksByName(productName);
@@ -80,6 +86,8 @@ namespace Webshop.Controllers
         }
 
         [HttpGet("stock")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<int>> GetProductStock([FromQuery] string productName, [FromQuery] string size)
         {
             var stock = await productManager.GetStockByNameSize(productName, size);

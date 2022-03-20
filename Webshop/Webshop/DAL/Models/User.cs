@@ -7,9 +7,7 @@
         public string Username { get; set; }
         public string Password { get; set; }
 
-        public User() { }
-
-        public User(string email, string username, string password) : this()
+        public User(string email, string username, string password)
         {
             Email = email;
             Username = username;

@@ -22,9 +22,11 @@ namespace Webshop
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IProductStockRepository, ProductStockRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddTransient<CategoryManager>();
             services.AddTransient<ProductManager>();
+            services.AddTransient<UserManager>();
 
             services.AddControllers().AddNewtonsoftJson();
         }
