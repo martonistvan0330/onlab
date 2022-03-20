@@ -5,8 +5,8 @@
         public Product(string name)
         {
             Name = name;
-            // OrderItem = new HashSet<OrderItem>();
-            // CartItem = new HashSet<CartItem>();
+            // OrderItems = new HashSet<OrderItem>();
+            // CartItems = new HashSet<CartItem>();
             ProductStocks = new HashSet<ProductStock>();
         }
 
@@ -19,8 +19,8 @@
         public Vat Vat { get; set; }
         public Category Category { get; set; }
 
-        // public ICollection<OrderItem> OrderItem { get; set; }
-        // public ICollection<CartItem> CartItem { get; set; }
+        // public ICollection<OrderItem> OrderItems { get; set; }
+        // public ICollection<CartItem> CartItems { get; set; }
         public ICollection<ProductStock> ProductStocks { get; set; }
     }
 }

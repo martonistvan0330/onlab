@@ -103,6 +103,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Product>(entity =>
             {
+                entity.ToTable("Product");
+
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
                 entity.Property(e => e.VatId).HasColumnName("VATID");
@@ -120,6 +122,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<ProductStock>(entity =>
             {
+                entity.ToTable("ProductStock");
+
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
                 entity.Property(e => e.SizeId).HasColumnName("SizeID");
@@ -157,6 +161,8 @@ namespace Webshop.DAL.EF
 
             modelBuilder.Entity<Size>(entity =>
             {
+                entity.ToTable("Size");
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(50);

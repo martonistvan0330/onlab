@@ -1,4 +1,5 @@
 ﻿using Webshop.DAL.EF;
+using Webshop.DAL.Repositories.Extensions;
 using Webshop.DAL.Repositories.Interfaces;
 
 namespace Webshop.DAL.Repositories
@@ -13,13 +14,13 @@ namespace Webshop.DAL.Repositories
         public async Task<IReadOnlyCollection<Models.Category>> ListMainCategories()
         {
             return await dbContext.Category
-                .FindMainCategories()
-                .GetCategories();
+                            .FindMainCategories()
+                            .GetCategories();
         }
 
         public async Task<IReadOnlyCollection<Models.Category>> ListSubcategoriesByParentCategory(string parentCategoryName)
         {
-            var parentCategory = dbContext.Category
+            var parentCategory = await dbContext.Category
                                     .GetByNameOrNull(parentCategoryName);
             if(parentCategory == null)
             {
@@ -28,8 +29,23 @@ namespace Webshop.DAL.Repositories
             else
             {
                 return await dbContext.Category
-                .FindCategoriesByParentCategory(parentCategory)
-                .GetCategories();
+                                .FindCategoriesByParentCategory(parentCategory)
+                                .GetCategories();
+            }
+        }
+
+        public async Task<IReadOnlyCollection<int>> GetCategoryIdsByParentCategory(string categoryName)
+        {
+            var category = await dbContext.Category.GetByNameOrNull(categoryName);
+            if (category == null)
+            {
+                return Array.Empty<int>();
+            }
+            else
+            {
+                return await dbContext.Category
+                        .FilterByParentCategory(category)
+                        .GetIds();
             }
         }
     }

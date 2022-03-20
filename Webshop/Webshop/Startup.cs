@@ -20,8 +20,11 @@ namespace Webshop
             services.AddDbContext<WebshopDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("WebshopDb")));
 
             services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<IProductStockRepository, ProductStockRepository>();
 
             services.AddTransient<CategoryManager>();
+            services.AddTransient<ProductManager>();
 
             services.AddControllers().AddNewtonsoftJson();
         }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Webshop.DAL.EF;
 
-namespace Webshop.DAL.Repositories
+namespace Webshop.DAL.Repositories.Extensions
 {
     internal static class CategoryRepositoryExtensions
     {
@@ -26,9 +26,21 @@ namespace Webshop.DAL.Repositories
             return new Models.Category(dbRecord.Name);
         }
 
-        public static Category? GetByNameOrNull(this IQueryable<Category> categories, string categoryName)
+        public static async Task<Category?> GetByNameOrNull(this IQueryable<Category> categories, string categoryName)
         {
-            return categories.SingleOrDefault(c => c.Name.Equals(categoryName));
+            return await categories.SingleOrDefaultAsync(c => c.Name.Equals(categoryName));
+        }
+
+        public static IQueryable<Category> FilterByParentCategory(this IQueryable<Category> categories, Category parentCategory)
+        {
+            return categories.Where(c => c == parentCategory || c.ParentCategory == parentCategory || c.ParentCategory.ParentCategory == parentCategory);
+        }
+
+        public static async Task<IReadOnlyCollection<int>> GetIds(this IQueryable<Category> categories)
+        {
+            return await categories
+                .Select(dbRec => dbRec.Id)
+                .ToArrayAsync();
         }
     }
 }

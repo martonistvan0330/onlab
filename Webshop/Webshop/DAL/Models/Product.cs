@@ -1,16 +1,14 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class Product
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public double Price { get; set; }
+        public readonly string Name;
+        public readonly double Price;
 
         public Product() { }
 
-        public Product(int id, string name, double price)
+        public Product(string name, double price)
         {
-            Id = id;
             Name = name;
             Price = price;
         }

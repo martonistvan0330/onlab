@@ -6,5 +6,6 @@ namespace Webshop.DAL.Repositories.Interfaces
     {
         Task<IReadOnlyCollection<Category>> ListMainCategories();
         Task<IReadOnlyCollection<Category>> ListSubcategoriesByParentCategory(string parentCategory);
+        Task<IReadOnlyCollection<int>> GetCategoryIdsByParentCategory(string categoryName);
     }
 }

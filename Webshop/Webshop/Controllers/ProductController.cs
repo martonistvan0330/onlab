@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Webshop.DAL.EF;
+using Webshop.BL;
+using Webshop.DAL.Models;
 
 namespace Webshop.Controllers
 {
@@ -8,138 +9,87 @@ namespace Webshop.Controllers
     [ApiController]
     public class ProductController : Controller
     {
-        private readonly WebshopDbContext dbContext;
-        public ProductController(WebshopDbContext dbContext)
+        private readonly ProductManager productManager;
+        public ProductController(ProductManager productManager)
         {
-            this.dbContext = dbContext;
+            this.productManager = productManager;
         }
 
         [HttpGet("main")]
-        public ActionResult<Models.Product[]> GetMainPageProducts()
+        public async Task<IEnumerable<Product>> GetMainPageProducts()
+            => await productManager.GetMainPageProducts();
+
+        [HttpGet("filter")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] string categoryName, [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 0, [FromQuery] string? sizes = null, [FromQuery] int page = 1)
         {
-            var productCount = dbContext.Product.Count();
-            var random = new Random();
-            var ids = new List<int>();
-            while (ids.Count < 6)
+            var products = await productManager.GetFilteredProducts(categoryName, minPrice, maxPrice, sizes, page);
+            
+            if (products.Count <= 0)
             {
-                int id = random.Next(0, productCount);
-                if (!ids.Contains(id))
-                {
-                    ids.Add(id);
-                }
+                return NotFound();
             }
-
-            var products = dbContext.Product.Where(p => ids.Contains(p.Id));
-
-            return products
-                    .Select(p => new Models.Product()
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Price = p.Price,
-                    })
-                    .ToArray();
+            else
+            {
+                return Ok(products);
+            }
         }
 
         [HttpGet]
-        public ActionResult<Models.Product[]> GetProducts([FromQuery] int categoryId = 0, [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 0, [FromQuery] string? sizes = null, [FromQuery] int page = 1)
+        public async Task<ActionResult<ProductDetails>> GetProduct([FromQuery] string productName)
         {
-            
-            var categoryIds = dbContext.Category
-                .Where(c => c.Id == categoryId || c.ParentCategory.Id == categoryId || c.ParentCategory.ParentCategory.Id == categoryId)
-                .Select(c => c.Id)
-                .ToArray();
+            var product = await productManager.GetProductDetailsOrNull(productName);
 
-            var filteredProducts = dbContext.Product
-                .Where(p => categoryIds.Contains(p.Category.Id))
-                .Where(p => p.Price >= minPrice);
-
-            if (sizes != null)
-            {
-                string[] sizeArray = sizes.Split(',');
-                filteredProducts = filteredProducts.Where(p => p.ProductStocks.Any(ps => sizeArray.Contains(ps.Size.Name) && ps.Stock > 0));
-            }
-
-            if (maxPrice > 0)
-            {
-                filteredProducts = filteredProducts.Where(p => p.Price <= maxPrice);
-            }
-
-            var products = filteredProducts
-                    .Skip((page - 1) * 6)
-                    .Take(6)
-                    .Select(p => new Models.Product()
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Price = p.Price,
-                    })
-                    .ToArray();
-            
-            if (products.Length > 0)
-            {
-                return products;
-            }
-            else
-            {
-                return NoContent();
-            }
-        }
-
-        [HttpGet("{productId}")]
-        public ActionResult<Models.ProductDetails> GetProduct([FromRoute] int productId)
-        {
-            var dbProduct = dbContext.Product.SingleOrDefault(p => p.Id == productId);
-
-            if (dbProduct != null)
-            {
-                return new Models.ProductDetails()
-                {
-                    Id = dbProduct.Id,
-                    Name = dbProduct.Name,
-                    Price = dbProduct.Price,
-                };
-            }
-            else
+            if (product == null)
             {
                 return NotFound();
             }
-        }
-
-        [HttpGet("{productId}/sizes")]
-        public ActionResult<string[]> GetProductSizes([FromRoute] int productId)
-        {
-            var sizes = dbContext.ProductStock
-                .Where(ps => ps.Product.Id == productId)
-                .Where(ps => ps.Stock > 0)
-                .Select(p => p.Size.Name);
-            if (sizes.Count() > 0)
-            {
-                return sizes.ToArray();
-            }
             else
             {
-                return NotFound();
+                return Ok(product);
             }
         }
 
-        [HttpGet("{productId}/stock")]
-        public ActionResult<int> GetProductStock([FromRoute] int productId, [FromQuery] string size)
+        [HttpGet("sizes")]
+        public async Task<ActionResult<IReadOnlyCollection<string>>> GetProductSizes([FromQuery] string productName)
         {
-            var product = dbContext.ProductStock
-                .Where(ps => ps.Product.Id == productId)
-                .FirstOrDefault();
-            if (product != null)
+            var sizes = await productManager.GetSizesByName(productName);
+            if (sizes.Count <= 0)
             {
-                return dbContext.ProductStock
-                .Where(ps => ps.Product.Id == productId)
-                .Where(ps => ps.Size.Name.Equals(size))
-                .Select(p => p.Stock)
-                .SingleOrDefault(); ;
+                return NotFound();
             }
             else
             {
+                return Ok(sizes);
+            }
+        }
+
+        [HttpGet("sizes/stock")]
+        public async Task<ActionResult<IReadOnlyCollection<ProductStock>>> GetProductStocks([FromQuery] string productName)
+        {
+            var sizes = await productManager.GetStocksByName(productName);
+            if (sizes.Count <= 0)
+            {
                 return NotFound();
+            }
+            else
+            {
+                return Ok(sizes);
+            }
+        }
+
+        [HttpGet("stock")]
+        public async Task<ActionResult<int>> GetProductStock([FromQuery] string productName, [FromQuery] string size)
+        {
+            var stock = await productManager.GetStockByNameSize(productName, size);
+            if (!stock.HasValue)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(stock.Value);
             }
         }
     }

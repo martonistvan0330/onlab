@@ -15,15 +15,20 @@ namespace Webshop.Controllers
         public async Task<IEnumerable<Category>> GetMainCategories()
             => await categoryManager.ListMainCategories();
 
-        [HttpGet()]
-        public async Task<IEnumerable<Category>> GetSubcategoriesByParentCategory([FromQuery] string parentCategoryName)
-            => await categoryManager.ListSubcategoriesByParentCategory(parentCategoryName);
-        /*{
-            var categories = dbContext.Category.Where(c => c.ParentCategoryId == parentCategoryId);
-            
-            return categories
-                    .Select(c => new Models.Category(c.Id, c.Name))
-                    .ToArray();
-        }*/
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<IEnumerable<Category>>> GetSubcategoriesByParentCategory([FromQuery] string parentCategoryName)
+        {
+            var categories = await categoryManager.ListSubcategoriesByParentCategory(parentCategoryName);
+            if (categories.Count <= 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(categories);
+            }
+        }
     }
 }
