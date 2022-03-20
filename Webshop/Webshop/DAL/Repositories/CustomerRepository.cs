@@ -16,6 +16,16 @@ namespace Webshop.DAL.Repositories
             return await dbContext.Customer.ExistsByName(customerName, userId);
         }
 
+        public async Task<IReadOnlyCollection<Models.Customer>> ListCustomers(int userId)
+        {
+
+            return await dbContext.Customer
+                            .WithShippingInfo()
+                            .WithPaymentInfo()
+                            .FilterByUser(userId)
+                            .GetCustomers();
+        }
+
         public async Task<bool> AddCustomer(Models.Customer customer, int userId, int shippingInfoId, int paymentInfoId)
         {
             var dbCustomer = new Customer()
@@ -42,6 +52,41 @@ namespace Webshop.DAL.Repositories
                 {
                     return false;
                 }
+            }
+        }
+
+        public async Task<bool> UpdateCustomer(Models.Customer customer, int userId, int shippingInfoId, int paymentInfoId, string oldName)
+        {
+            if (await dbContext.Customer.ExistsByName(oldName, userId))
+            {
+                var dbCustomer = await dbContext.Customer.GetCustomerByNameOrNull(oldName, userId);
+
+                if (dbCustomer != null)
+                {
+                    dbCustomer.Name = customer.Name;
+                    dbCustomer.ShippingInfoId = shippingInfoId;
+                    dbCustomer.PaymentInfoId = paymentInfoId;
+
+                    dbContext.Customer.Update(dbCustomer);
+
+                    try
+                    {
+                        await dbContext.SaveChangesAsync();
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
     }
