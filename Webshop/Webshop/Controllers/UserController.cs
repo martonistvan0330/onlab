@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Webshop.BL;
-using Webshop.Models;
+using Webshop.DAL.Models;
 
 namespace Webshop.Controllers
 {
@@ -15,15 +15,18 @@ namespace Webshop.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Login([FromBody] Login login)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<string>> Login([FromBody] Login login)
         {
-            if (await userManager.CheckLogin(login.Username, login.Password))
+            var sessionId = await userManager.Login(login.Username, login.Password);
+            if (sessionId == null)
             {
-                return Ok();
+                return NotFound("invalid username or password");
             }
             else
             {
-                return BadRequest("invalid username or password");
+                return Ok(sessionId.ToString());
             }
         }
 

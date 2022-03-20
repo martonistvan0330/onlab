@@ -1,26 +1,20 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class Address
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Country { get; set; }
-        public string Region { get; set; }
-        public string City { get; set; }
-        public string ZipCode { get; set; }
-        public string Street { get; set; }
-        public string PhoneNumber { get; set; }
+        public readonly string Country;
+        public readonly string Region;
+        public readonly string City;
+        public readonly string ZipCode;
+        public readonly string Street;
 
-        public Address(string firstName, string lastName, string country, string region, string city, string zipCode, string street, string phoneNumber)
+        public Address(string country, string region, string city, string zipCode, string street)
         {
-            FirstName = firstName;
-            LastName = lastName;
             Country = country;
             Region = region;
             City = city;
             ZipCode = zipCode;
             Street = street;
-            PhoneNumber = phoneNumber;
         }
     }
 }

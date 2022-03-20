@@ -1,14 +1,12 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class PaymentMethod
     {
-        public int Id { get; set; }
-        public string Method { get; set; }
-        public int Deadline { get; set; }
+        public readonly string Method;
+        public readonly int Deadline;
 
-        public PaymentMethod(int id, string method, int deadline)
+        public PaymentMethod(string method, int deadline)
         {
-            Id = id;
             Method = method;
             Deadline = deadline;
         }

@@ -1,17 +1,15 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class Customer
     {
-        public int UserId { get; set; }
-        public string Name { get; set; }
-        public ShippingInfo ShippingInfo { get; set; }
-        public PaymentInfo PaymentInfo { get; set; }
+        public readonly string SessionId;
+        public readonly string Name;
+        public readonly ShippingInfo ShippingInfo;
+        public readonly PaymentInfo PaymentInfo;
 
-        public Customer() { }
-
-        public Customer(int userId, string name, ShippingInfo shippingInfo, PaymentInfo paymentInfo) : this() 
+        public Customer(string sessionId, string name, ShippingInfo shippingInfo, PaymentInfo paymentInfo)
         {
-            UserId = userId;
+            SessionId = sessionId;
             Name = name;
             ShippingInfo = shippingInfo;
             PaymentInfo = paymentInfo;

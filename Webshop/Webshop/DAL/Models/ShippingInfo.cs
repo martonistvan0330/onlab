@@ -1,14 +1,14 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class ShippingInfo
     {
-        public ShippingMethod Method { get; set; }
-        public Address ShippingAddress { get; set; }
+        public readonly ShippingMethod ShippingMethod;
+        public readonly AddressInfo ShippingAddressInfo;
 
-        public ShippingInfo(ShippingMethod method, Address shippingAddress)
+        public ShippingInfo(ShippingMethod shippingMethod, AddressInfo shippingAddressInfo)
         {
-            Method = method;
-            ShippingAddress = shippingAddress;
+            ShippingMethod = shippingMethod;
+            ShippingAddressInfo = shippingAddressInfo;
         }
     }
 }

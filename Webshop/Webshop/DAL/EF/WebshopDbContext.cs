@@ -14,12 +14,14 @@ namespace Webshop.DAL.EF
         }
 
         public virtual DbSet<Address> Address { get; set; }
+        public virtual DbSet<AddressInfo> AddressInfo { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<PaymentInfo> PaymentInfo { get; set; }
         public virtual DbSet<PaymentMethod> PaymentMethod { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductStock> ProductStock { get; set; }
+        public virtual DbSet<Session> Session { get; set; }
         public virtual DbSet<ShippingInfo> ShippingInfo { get; set; }
         public virtual DbSet<ShippingMethod> ShippingMethod { get; set; }
         public virtual DbSet<Size> Size { get; set; }
@@ -36,14 +38,28 @@ namespace Webshop.DAL.EF
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.Country).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Region).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.ZipCode).IsRequired().HasMaxLength(10);
+                entity.Property(e => e.City).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Street).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<AddressInfo>(entity =>
+            {
+                entity.ToTable(nameof(AddressInfo));
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
                 entity.Property(e => e.FirstName).HasMaxLength(50);
                 entity.Property(e => e.LastName).HasMaxLength(50);
-                entity.Property(e => e.Country).HasMaxLength(50);
-                entity.Property(e => e.Region).HasMaxLength(50);
-                entity.Property(e => e.ZipCode).HasMaxLength(10);
-                entity.Property(e => e.City).HasMaxLength(50);
-                entity.Property(e => e.Street).HasMaxLength(50);
                 entity.Property(e => e.PhoneNumber).HasMaxLength(20);
+
+                entity.Property(e => e.AddressId).HasColumnName("AddressID");
+
+                entity.HasOne(d => d.Address)
+                    .WithMany(p => p.AddressInfos)
+                    .HasForeignKey(d => d.AddressId);
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -89,15 +105,15 @@ namespace Webshop.DAL.EF
 
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.PaymentMethodId).HasColumnName("PaymentMethodID");
-                entity.Property(e => e.BillingAddressId).HasColumnName("BillingAddressID");
+                entity.Property(e => e.BillingAddressInfoId).HasColumnName("BillingAddressInfoID");
 
                 entity.HasOne(d => d.PaymentMethod)
                     .WithMany(p => p.PaymentInfos)
                     .HasForeignKey(d => d.PaymentMethodId);
 
-                entity.HasOne(d => d.BillingAddress)
+                entity.HasOne(d => d.BillingAddressInfo)
                     .WithMany(p => p.PaymentInfos)
-                    .HasForeignKey(d => d.BillingAddressId);
+                    .HasForeignKey(d => d.BillingAddressInfoId);
             });
 
             modelBuilder.Entity<PaymentMethod>(entity =>
@@ -145,21 +161,38 @@ namespace Webshop.DAL.EF
                     .HasForeignKey(d => d.SizeId);
             });
 
+            modelBuilder.Entity<Session>(entity =>
+            {
+                entity.ToTable(nameof(Session));
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.SessionId).IsRequired().HasMaxLength(50);
+
+                entity.Property(e => e.IsActive).IsRequired().HasColumnType("bit").HasColumnName("Active");
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Sessions)
+                    .HasForeignKey(d => d.UserId);
+            });
+
             modelBuilder.Entity<ShippingInfo>(entity =>
             {
                 entity.ToTable(nameof(ShippingInfo));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.ShippingMethodId).HasColumnName("ShippingMethodID");
-                entity.Property(e => e.ShippingAddressId).HasColumnName("ShippingAddressID");
+                entity.Property(e => e.ShippingAddressInfoId).HasColumnName("ShippingAddressInfoID");
 
                 entity.HasOne(d => d.ShippingMethod)
                     .WithMany(p => p.ShippingInfos)
                     .HasForeignKey(d => d.ShippingMethodId);
 
-                entity.HasOne(d => d.ShippingAddress)
+                entity.HasOne(d => d.ShippingAddressInfo)
                     .WithMany(p => p.ShippingInfos)
-                    .HasForeignKey(d => d.ShippingAddressId);
+                    .HasForeignKey(d => d.ShippingAddressInfoId);
             });
 
             modelBuilder.Entity<ShippingMethod>(entity =>
@@ -185,6 +218,7 @@ namespace Webshop.DAL.EF
                 entity.ToTable(nameof(User));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
+
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Password).IsRequired().HasMaxLength(50);

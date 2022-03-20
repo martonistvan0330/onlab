@@ -1,6 +1,6 @@
 ﻿using System.Transactions;
+using Webshop.DAL.Models;
 using Webshop.DAL.Repositories.Interfaces;
-using Webshop.Models;
 
 namespace Webshop.BL
 {
@@ -13,9 +13,9 @@ namespace Webshop.BL
             this.userRepository = userRepository;
         }
 
-        public async Task<bool> CheckLogin(string username, string password)
+        public async Task<Guid?> Login(string username, string password)
         {
-            return await userRepository.CheckLogin(username, password);
+            return await userRepository.Login(username, password);
         }
 
         public async Task<bool> ExistsByUsername(string username)
@@ -37,7 +37,6 @@ namespace Webshop.BL
                 }
                 else
                 {
-                    transaction.Complete();
                     return false;
                 }
             }

@@ -19,12 +19,21 @@ namespace Webshop
         {
             services.AddDbContext<WebshopDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("WebshopDb")));
 
+            services.AddTransient<IAddressRepository, AddressRepository>();
+            services.AddTransient<IAddressInfoRepository, AddressInfoRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IProductStockRepository, ProductStockRepository>();
+            services.AddTransient<ISessionRepository, SessionRepository>();
+            services.AddTransient<IShippingInfoRepository, ShippingInfoRepository>();
+            services.AddTransient<IShippingMethodRepository, ShippingMethodRepository>();
+            services.AddTransient<IPaymentInfoRepository, PaymentInfoRepository>();
+            services.AddTransient<IPaymentMethodRepository, PaymentMethodRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddTransient<CategoryManager>();
+            services.AddTransient<CustomerManager>();
             services.AddTransient<ProductManager>();
             services.AddTransient<UserManager>();
 

@@ -1,10 +1,10 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class NewUser
     {
-        public string Email { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public readonly string Email;
+        public readonly string Username;
+        public readonly string Password;
 
         public NewUser(string email, string username, string password)
         {

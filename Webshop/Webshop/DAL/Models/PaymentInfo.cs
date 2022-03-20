@@ -1,14 +1,14 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class PaymentInfo
     {
-        public PaymentMethod Method { get; set; }
-        public Address BillingAddress { get; set; }
+        public readonly PaymentMethod PaymentMethod;
+        public readonly AddressInfo BillingAddressInfo;
 
-        public PaymentInfo(PaymentMethod method, Address billingAddress)
+        public PaymentInfo(PaymentMethod paymentMethod, AddressInfo billingAddressInfo)
         {
-            Method = method;
-            BillingAddress = billingAddress;
+            PaymentMethod = paymentMethod;
+            BillingAddressInfo = billingAddressInfo;
         }
     }
 }

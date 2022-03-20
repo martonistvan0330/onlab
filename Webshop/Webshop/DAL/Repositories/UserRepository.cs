@@ -2,7 +2,6 @@
 using Webshop.DAL.EF;
 using Webshop.DAL.Repositories.Extensions;
 using Webshop.DAL.Repositories.Interfaces;
-using Webshop.Models;
 
 namespace Webshop.DAL.Repositories
 {
@@ -13,23 +12,27 @@ namespace Webshop.DAL.Repositories
         public UserRepository(WebshopDbContext dbContext)
             => this.dbContext = dbContext;
 
-        public async Task<bool> CheckLogin(string username, string password)
+        public async Task<Guid?> Login(string username, string password)
         {
-            var dbUser = await dbContext.User.GetUserByUsernameOrNull(username);
-            if (dbUser != null)
+            var dbUser = await dbContext.User
+                                   .GetUserByUsernameOrNull(username);
+            if (dbUser == null || !dbUser.Password.Equals(password))
             {
-                if (dbUser.Password == password)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return null;
             }
             else
             {
-                return false;
+                var sessionId = Guid.NewGuid();
+                var dbRecord = new Session()
+                {
+                    SessionId = sessionId.ToString(),
+                    User = dbUser,
+                    IsActive = true,
+                };
+
+                dbContext.Session.Add(dbRecord);
+                await dbContext.SaveChangesAsync();
+                return sessionId;
             }
         }
 
@@ -46,7 +49,7 @@ namespace Webshop.DAL.Repositories
             }
         }
 
-        public async Task<bool> AddUser(NewUser newUser)
+        public async Task<bool> AddUser(Models.NewUser newUser)
         {
             var dbUser = new User()
             {

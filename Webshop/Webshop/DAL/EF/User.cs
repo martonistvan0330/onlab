@@ -1,17 +1,11 @@
-﻿namespace Webshop.DAL
+﻿namespace Webshop.DAL.EF
 {
     public class User
     {
         public User()
         {
             Customers = new HashSet<Customer>();
-        }
-
-        public User(string email, string username, string password) : this()
-        {
-            Email = email;
-            Username = username;
-            Password = password;
+            Sessions = new HashSet<Session>();
         }
 
         public int Id { get; set; }
@@ -20,5 +14,6 @@
         public string Password { get; set; }
 
         public ICollection<Customer> Customers { get; set; }
+        public ICollection<Session> Sessions { get; set; }
     }
 }

@@ -1,12 +1,10 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.DAL.Models
 {
     public class Login
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
-
-        public Login() { }
-        public Login(string username, string password) : this()
+        public readonly string Username;
+        public readonly string Password;
+        public Login(string username, string password)
         {
             Username = username;
             Password = password;
