@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Webshop.BL;
+using Webshop.Models;
 
 namespace Webshop.Controllers
 {
@@ -13,47 +14,24 @@ namespace Webshop.Controllers
             this.userManager = userManager;
         }
 
-        /*[HttpGet("{userId}")]
-        public ActionResult<Models.User> GetUser([FromRoute] int userId)
+        [HttpGet]
+        public async Task<ActionResult> Login([FromBody] Login login)
         {
-            var dbUser = dbContext.User.SingleOrDefault(u => u.Id == userId);
-
-            if (dbUser != null)
+            if (await userManager.CheckLogin(login.Username, login.Password))
             {
-                return new Models.User()
-                {
-                    Id = dbUser.Id,
-                    Email = dbUser.Email,
-                    Username = dbUser.Username,
-                    Password = dbUser.Password,
-                };
+                return Ok();
             }
             else
             {
-                return NotFound();
+                return BadRequest("invalid username or password");
             }
-        }*/
-
-        /*[HttpGet]
-        public ActionResult Login([FromBody] Models.Login login)
-        {
-            var dbUser = dbContext.User.SingleOrDefault(u => u.Username == login.Username && u.Password == login.Password);
-
-            if (dbUser != null)
-            {
-                return Ok(new {dbUser.Id});
-            }
-            else
-            {
-                return BadRequest("wrong username or password");
-            }
-        }*/
+        }
 
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> AddUser([FromBody] Models.NewUser newUser)
+        public async Task<ActionResult> AddUser([FromBody] NewUser newUser)
         {
             if ((await userManager.ExistsByUsername(newUser.Username)))
             {

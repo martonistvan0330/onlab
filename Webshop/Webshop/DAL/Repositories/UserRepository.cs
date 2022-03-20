@@ -13,10 +13,30 @@ namespace Webshop.DAL.Repositories
         public UserRepository(WebshopDbContext dbContext)
             => this.dbContext = dbContext;
 
+        public async Task<bool> CheckLogin(string username, string password)
+        {
+            var dbUser = await dbContext.User.GetUserByUsernameOrNull(username);
+            if (dbUser != null)
+            {
+                if (dbUser.Password == password)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> ExistsByUsername(string username)
         {
-            var user = await dbContext.User.GetUserByUsernameOrNull(username);
-            if (user == null)
+            var dbUser = await dbContext.User.GetUserByUsernameOrNull(username);
+            if (dbUser == null)
             {
                 return false;
             }

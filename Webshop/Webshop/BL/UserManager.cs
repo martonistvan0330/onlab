@@ -13,6 +13,11 @@ namespace Webshop.BL
             this.userRepository = userRepository;
         }
 
+        public async Task<bool> CheckLogin(string username, string password)
+        {
+            return await userRepository.CheckLogin(username, password);
+        }
+
         public async Task<bool> ExistsByUsername(string username)
         {
             return await userRepository.ExistsByUsername(username);
