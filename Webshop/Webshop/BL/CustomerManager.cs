@@ -128,19 +128,9 @@ namespace Webshop.BL
         {
             if (await sessionRepository.ValidateSessionId(customer.SessionId))
             {
-                Console.WriteLine("POGGERS");
-                Console.WriteLine("POGGERS");
-                Console.WriteLine("POGGERS");
-                Console.WriteLine("POGGERS");
-                Console.WriteLine("POGGERS");
                 var userId = await sessionRepository.GetUserIdBySessionIdOrNull(customer.SessionId);
                 if (!(await customerRepository.ExistsByName(customer.Name, userId.Value)))
                 {
-                    Console.WriteLine("POG");
-                    Console.WriteLine("POG");
-                    Console.WriteLine("POG");
-                    Console.WriteLine("POG");
-                    Console.WriteLine("POG");
                     return await customerRepository.AddCustomer(customer, userId.Value, shippingInfoId, paymentInfoId);
                 }
             }
