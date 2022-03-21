@@ -70,8 +70,30 @@ namespace Webshop.DAL.Repositories
             {
                 return false;
             }
+        }
 
-            
+        public async Task<bool> RemoveCartItem(int cartItemId, int cartId)
+        {
+            var dbCartItem = await dbContext.CartItem
+                                       .GetCartItemByIdCart(cartItemId, cartId);
+            if (dbCartItem == null)
+            {
+                return true;
+            }
+            else
+            {
+                dbContext.CartItem.Remove(dbCartItem);
+
+                try
+                {
+                    await dbContext.SaveChangesAsync();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
 
         public async Task<int> GetAmountById(int cartItemId)

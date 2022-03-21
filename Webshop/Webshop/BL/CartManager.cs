@@ -102,5 +102,29 @@ namespace Webshop.BL
                 return false;
             }
         }
+
+        public async Task<bool> TryRemoveCartItem(int cartItemId, string sessionId)
+        {
+            using (var transaction = new TransactionScope(
+                        TransactionScopeOption.Required,
+                        new TransactionOptions() { IsolationLevel = IsolationLevel.RepeatableRead },
+                        TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var cart = await cartRepository.GetCartBySessionIdOrNull(sessionId);
+                if (cart != null)
+                {
+                    if (await cartItemRepository.RemoveCartItem(cartItemId, cart.Id))
+                    {
+                        var cartItem = await cartItemRepository.GetByIdOrNull(cartItemId);
+                        if (cartItem == null)
+                        {
+                            transaction.Complete();
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        }
     }
 }

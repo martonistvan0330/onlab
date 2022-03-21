@@ -75,5 +75,28 @@ namespace Webshop.Controllers
                 return NotFound("invalid sessionID");
             }
         }
+
+        [HttpDelete("{cartItemId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        public async Task<ActionResult> RemoveCartItem([FromRoute] int cartItemId, [FromQuery] string sessionId)
+        {
+            if (await cartManager.ValidateSessionId(sessionId))
+            {
+                if (await cartManager.TryRemoveCartItem(cartItemId, sessionId))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Conflict();
+                }
+            }
+            else
+            {
+                return NotFound("invalid sessionID");
+            }
+        }
     }
 }
