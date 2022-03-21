@@ -15,11 +15,32 @@ namespace Webshop.DAL.Repositories.Extensions
             return customers.Where(c => c.Name.Equals(customerName));
         }
 
+        public static IQueryable<Customer> FindById(this IQueryable<Customer> customers, int customerId)
+        {
+            return customers.Where(c => c.Id == customerId);
+        }
+
         public static async Task<bool> ExistsByName(this IQueryable<Customer> customers, string customerName, int userId)
         {
             var dbCustomer = await customers
                                     .FilterByUser(userId)
                                     .FindByName(customerName)
+                                    .GetCustomerOrNull();
+            if (dbCustomer == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static async Task<bool> ExistsById(this IQueryable<Customer> customers, int customerId, int userId)
+        {
+            var dbCustomer = await customers
+                                    .FilterByUser(userId)
+                                    .FindById(customerId)
                                     .GetCustomerOrNull();
             if (dbCustomer == null)
             {

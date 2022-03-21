@@ -16,6 +16,11 @@ namespace Webshop.DAL.Repositories
             return await dbContext.Customer.ExistsByName(customerName, userId);
         }
 
+        public async Task<bool> ExistsById(int customerId, int userId)
+        {
+            return await dbContext.Customer.ExistsById(customerId, userId);
+        }
+
         public async Task<IReadOnlyCollection<Models.Customer>> ListCustomers(int userId)
         {
 

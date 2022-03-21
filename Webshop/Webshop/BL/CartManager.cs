@@ -29,6 +29,11 @@ namespace Webshop.BL
             return await sessionManager.ValidateSessionId(sessionId);
         }
 
+        public async Task<DAL.EF.CartItem?> GetCartItemByIdOrNull(int cartItemId)
+        {
+            return await cartItemRepository.GetByIdOrNull(cartItemId);
+        }
+
         public async Task<IReadOnlyCollection<CartItemWithId>> ListCartItems(string sessionId)
         {
             var cart = await cartRepository.GetCartBySessionIdOrNull(sessionId);

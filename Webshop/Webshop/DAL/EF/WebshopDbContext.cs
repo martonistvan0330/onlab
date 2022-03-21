@@ -19,6 +19,8 @@ namespace Webshop.DAL.EF
         public virtual DbSet<CartItem> CartItem { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Customer> Customer { get; set; }
+        public virtual DbSet<Order> Order { get; set; }
+        public virtual DbSet<OrderItem> OrderItem { get; set; }
         public virtual DbSet<PaymentInfo> PaymentInfo { get; set; }
         public virtual DbSet<PaymentMethod> PaymentMethod { get; set; }
         public virtual DbSet<Product> Product { get; set; }
@@ -26,6 +28,7 @@ namespace Webshop.DAL.EF
         public virtual DbSet<Session> Session { get; set; }
         public virtual DbSet<ShippingInfo> ShippingInfo { get; set; }
         public virtual DbSet<ShippingMethod> ShippingMethod { get; set; }
+        public virtual DbSet<Status> Status { get; set; }
         public virtual DbSet<Size> Size { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Vat> Vat { get; set; }
@@ -137,6 +140,47 @@ namespace Webshop.DAL.EF
                     .HasForeignKey(d => d.PaymentInfoId);
             });
 
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.ToTable(nameof(Order));
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+                entity.Property(e => e.Deadline).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.StatusId);
+
+                entity.HasOne(d => d.Customer)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.CustomerId);
+            });
+
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.ToTable(nameof(OrderItem));
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.OrderItems)
+                    .HasForeignKey(d => d.OrderId);
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.OrderItems)
+                    .HasForeignKey(d => d.ProductId);
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.OrderItems)
+                    .HasForeignKey(d => d.StatusId);
+
+                entity.HasOne(d => d.Size)
+                    .WithMany(p => p.OrderItems)
+                    .HasForeignKey(d => d.SizeId);
+            });
+
             modelBuilder.Entity<PaymentInfo>(entity =>
             {
                 entity.ToTable(nameof(PaymentInfo));
@@ -245,6 +289,15 @@ namespace Webshop.DAL.EF
             modelBuilder.Entity<Size>(entity =>
             {
                 entity.ToTable(nameof(Size));
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Status>(entity =>
+            {
+                entity.ToTable(nameof(Status));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 

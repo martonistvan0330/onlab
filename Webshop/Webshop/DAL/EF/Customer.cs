@@ -2,6 +2,11 @@
 {
     public class Customer
     {
+        public Customer()
+        {
+            Orders = new HashSet<Order>();
+        }
+
         public int Id { get; set; }
         public int UserId { get; set; }
         public string Name { get; set; }
@@ -12,5 +17,7 @@
         public User User { get; set; }
         public ShippingInfo ShippingInfo { get; set; }
         public PaymentInfo PaymentInfo { get; set; }
+
+        public ICollection<Order> Orders { get; set; }
     }
 }

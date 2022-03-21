@@ -48,6 +48,12 @@ namespace Webshop.BL
             return await customerRepository.ExistsByName(customerName, userId.Value);
         }
 
+        public async Task<bool> ExistsById(int customerId, string sessionId)
+        {
+            var userId = await sessionManager.GetUserIdBySessionIdOrNull(sessionId);
+            return await customerRepository.ExistsById(customerId, userId.Value);
+        }
+
         public async Task<IReadOnlyCollection<Customer>> ListCustomers(string sessionId)
         {
             var userId = await sessionManager.GetUserIdBySessionIdOrNull(sessionId);

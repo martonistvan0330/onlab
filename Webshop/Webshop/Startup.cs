@@ -25,12 +25,15 @@ namespace Webshop
             services.AddTransient<ICartItemRepository, CartItemRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IOrderItemRepository, OrderItemRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IProductStockRepository, ProductStockRepository>();
             services.AddTransient<ISessionRepository, SessionRepository>();
-            services.AddTransient<ISizeRepository, SizeRepository>();
             services.AddTransient<IShippingInfoRepository, ShippingInfoRepository>();
             services.AddTransient<IShippingMethodRepository, ShippingMethodRepository>();
+            services.AddTransient<ISizeRepository, SizeRepository>();
+            //services.AddTransient<IStatusRepository, StatusRepository>();
             services.AddTransient<IPaymentInfoRepository, PaymentInfoRepository>();
             services.AddTransient<IPaymentMethodRepository, PaymentMethodRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
@@ -38,6 +41,7 @@ namespace Webshop
             services.AddTransient<CategoryManager>();
             services.AddTransient<CartManager>();
             services.AddTransient<CustomerManager>();
+            services.AddTransient<OrderManager>();
             services.AddTransient<ProductManager>();
             services.AddTransient<SessionManager>();
             services.AddTransient<UserManager>();
