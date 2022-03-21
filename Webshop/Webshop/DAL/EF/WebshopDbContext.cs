@@ -15,6 +15,8 @@ namespace Webshop.DAL.EF
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<AddressInfo> AddressInfo { get; set; }
+        public virtual DbSet<Cart> Cart { get; set; }
+        public virtual DbSet<CartItem> CartItem { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<PaymentInfo> PaymentInfo { get; set; }
@@ -60,6 +62,42 @@ namespace Webshop.DAL.EF
                 entity.HasOne(d => d.Address)
                     .WithMany(p => p.AddressInfos)
                     .HasForeignKey(d => d.AddressId);
+            });
+
+            modelBuilder.Entity<Cart>(entity =>
+            {
+                entity.ToTable(nameof(Cart));
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+                entity.Property(e => e.SessionId).HasMaxLength(50);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Carts)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<CartItem>(entity =>
+            {
+                entity.ToTable(nameof(CartItem));
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.CartId).HasColumnName("CartID");
+                entity.Property(e => e.ProductId).HasColumnName("ProductID");
+                entity.Property(e => e.SizeId).HasColumnName("SizeID");
+
+                entity.HasOne(d => d.Cart)
+                    .WithMany(p => p.Items)
+                    .HasForeignKey(d => d.CartId);
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.CartItems)
+                    .HasForeignKey(d => d.ProductId);
+
+                entity.HasOne(d => d.Size)
+                    .WithMany(p => p.CartItems)
+                    .HasForeignKey(d => d.SizeId);
             });
 
             modelBuilder.Entity<Category>(entity =>

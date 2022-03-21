@@ -5,15 +5,17 @@ namespace Webshop.BL
 {
     public class ProductManager
     {
-        public readonly IProductRepository productRepository;
-        public readonly ICategoryRepository categoryRepository;
-        public readonly IProductStockRepository productStockRepository;
+        private readonly IProductRepository productRepository;
+        private readonly ICategoryRepository categoryRepository;
+        private readonly IProductStockRepository productStockRepository;
+        private readonly ISizeRepository sizeRepository;
 
-        public ProductManager(IProductRepository productRepository, ICategoryRepository categoryRepository, IProductStockRepository productStockRepository)
+        public ProductManager(IProductRepository productRepository, ICategoryRepository categoryRepository, IProductStockRepository productStockRepository, ISizeRepository sizeRepository)
         {
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
             this.productStockRepository = productStockRepository;
+            this.sizeRepository = sizeRepository;
         }
 
         public async Task<IReadOnlyCollection<Product>> GetMainPageProducts()
@@ -89,17 +91,43 @@ namespace Webshop.BL
             }
         }
 
-        public async Task<int?> GetStockByNameSize(string productName, string size)
+        public async Task<(bool, int)> GetProductIdByName(string productName)
         {
-            var productId = await productRepository.GetProductIdByName(productName);
-
-            if (productId == null)
+            if (await productRepository.ExistsByName(productName))
             {
-                return null;
+                var productId = await productRepository.GetProductIdByName(productName);
+                return (true, productId.Value);
             }
             else
             {
-                return await productStockRepository.GetStockByProductIdSize(productId.Value, size);
+                return (false, -1);
+            }
+        }
+
+        public async Task<(bool, int)> GetStockByNameSize(string productName, string size)
+        {
+            if (await productRepository.ExistsByName(productName))
+            {
+                var productId = await productRepository.GetProductIdByName(productName);
+                var stock = await productStockRepository.GetStockByProductIdSize(productId.Value, size);
+                return (true, stock.Value);
+            }
+            else
+            {
+                return (false, -1);
+            }
+        }
+
+        public async Task<(bool, int)> GetSizeIdByName(string sizeName)
+        {
+            if (await sizeRepository.ExistsByName(sizeName))
+            {
+                var sizeId = await sizeRepository.GetIdByName(sizeName);
+                return (true, sizeId);
+            }
+            else
+            {
+                return (false, -1);
             }
         }
     }

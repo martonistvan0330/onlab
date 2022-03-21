@@ -84,21 +84,5 @@ namespace Webshop.Controllers
                 return Ok(sizes);
             }
         }
-
-        [HttpGet("stock")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult<int>> GetProductStock([FromQuery] string productName, [FromQuery] string size)
-        {
-            var stock = await productManager.GetStockByNameSize(productName, size);
-            if (!stock.HasValue)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(stock.Value);
-            }
-        }
     }
 }

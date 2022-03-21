@@ -41,6 +41,12 @@ namespace Webshop.DAL.Repositories
                             .GetProductDetailsOrNull();
         }
 
+        public async Task<bool> ExistsByName(string productName)
+        {
+            return await dbContext.Product
+                            .ExistsByName(productName);
+        }
+
         public async Task<int?> GetProductIdByName(string productName)
         {
             return await dbContext.Product

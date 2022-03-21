@@ -21,11 +21,14 @@ namespace Webshop
 
             services.AddTransient<IAddressRepository, AddressRepository>();
             services.AddTransient<IAddressInfoRepository, AddressInfoRepository>();
+            services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<ICartItemRepository, CartItemRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IProductStockRepository, ProductStockRepository>();
             services.AddTransient<ISessionRepository, SessionRepository>();
+            services.AddTransient<ISizeRepository, SizeRepository>();
             services.AddTransient<IShippingInfoRepository, ShippingInfoRepository>();
             services.AddTransient<IShippingMethodRepository, ShippingMethodRepository>();
             services.AddTransient<IPaymentInfoRepository, PaymentInfoRepository>();
@@ -33,8 +36,10 @@ namespace Webshop
             services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddTransient<CategoryManager>();
+            services.AddTransient<CartManager>();
             services.AddTransient<CustomerManager>();
             services.AddTransient<ProductManager>();
+            services.AddTransient<SessionManager>();
             services.AddTransient<UserManager>();
 
             services.AddControllers().AddNewtonsoftJson();

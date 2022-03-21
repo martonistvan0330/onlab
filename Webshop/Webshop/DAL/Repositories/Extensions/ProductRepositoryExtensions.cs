@@ -74,6 +74,33 @@ namespace Webshop.DAL.Repositories.Extensions
                             .SingleOrDefaultAsync();
         }
 
+        public async static Task<bool> ExistsByName(this IQueryable<Product> products, string productName)
+        {
+            var dbProduct = await products
+                            .GetProductByNameOrNull(productName);
+            if (dbProduct == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public async static Task<Product?> GetProductByNameOrNull(this IQueryable<Product> products, string productName)
+        {
+            return await products
+                            .FindByName(productName)
+                            .GetProductOrNull();
+        }
+
+        public async static Task<Product?> GetProductOrNull(this IQueryable<Product> products)
+        {
+            return await products
+                            .SingleOrDefaultAsync();
+        }
+
         public static IQueryable<Product> WithVat(this IQueryable<Product> products)
             => products.Include(p => p.Vat);
 

@@ -6,50 +6,51 @@ namespace Webshop.BL
 {
     public class CustomerManager
     {
-        public readonly ICustomerRepository customerRepository;
-        public readonly ISessionRepository sessionRepository;
-        public readonly IAddressRepository addressRepository;
-        public readonly IAddressInfoRepository addressInfoRepository;
-        public readonly IShippingMethodRepository shippingMethodRepository;
-        public readonly IPaymentMethodRepository paymentMethodRepository;
-        public readonly IShippingInfoRepository shippingInfoRepository;
-        public readonly IPaymentInfoRepository paymentInfoRepository;
+        private readonly ICustomerRepository customerRepository;
+        private readonly IAddressRepository addressRepository;
+        private readonly IAddressInfoRepository addressInfoRepository;
+        private readonly IShippingMethodRepository shippingMethodRepository;
+        private readonly IPaymentMethodRepository paymentMethodRepository;
+        private readonly IShippingInfoRepository shippingInfoRepository;
+        private readonly IPaymentInfoRepository paymentInfoRepository;
+
+        private readonly SessionManager sessionManager;
 
         public CustomerManager(
             ICustomerRepository customerRepository,
-            ISessionRepository sessionRepository,
             IAddressRepository addressRepository,
             IAddressInfoRepository addressInfoRepository,
             IShippingMethodRepository shippingMethodRepository,
             IPaymentMethodRepository paymentMethodRepository,
             IShippingInfoRepository shippingInfoRepository,
-            IPaymentInfoRepository paymentInfoRepository
+            IPaymentInfoRepository paymentInfoRepository,
+            SessionManager sessionManager
         )
         {
             this.customerRepository = customerRepository;
-            this.sessionRepository = sessionRepository;
             this.addressRepository = addressRepository;
             this.addressInfoRepository = addressInfoRepository;
             this.shippingMethodRepository = shippingMethodRepository;
             this.paymentMethodRepository = paymentMethodRepository;
             this.shippingInfoRepository = shippingInfoRepository;
             this.paymentInfoRepository = paymentInfoRepository;
+            this.sessionManager = sessionManager;
         }
 
         public async Task<bool> ValidateSessionId(string sessionId)
         {
-            return await sessionRepository.ValidateSessionId(sessionId);
+            return await sessionManager.ValidateSessionId(sessionId);
         }
 
         public async Task<bool> ExistsByName(string customerName, string sessionId)
         {
-            var userId = await sessionRepository.GetUserIdBySessionIdOrNull(sessionId);
+            var userId = await sessionManager.GetUserIdBySessionIdOrNull(sessionId);
             return await customerRepository.ExistsByName(customerName, userId.Value);
         }
 
         public async Task<IReadOnlyCollection<Customer>> ListCustomers(string sessionId)
         {
-            var userId = await sessionRepository.GetUserIdBySessionIdOrNull(sessionId);
+            var userId = await sessionManager.GetUserIdBySessionIdOrNull(sessionId);
             return await customerRepository.ListCustomers(userId.Value);
         }
 
@@ -171,9 +172,9 @@ namespace Webshop.BL
 
         private async Task<bool> TryAddCustomer(Customer customer, int shippingInfoId, int paymentInfoId)
         {
-            if (await sessionRepository.ValidateSessionId(customer.SessionId))
+            if (await sessionManager.ValidateSessionId(customer.SessionId))
             {
-                var userId = await sessionRepository.GetUserIdBySessionIdOrNull(customer.SessionId);
+                var userId = await sessionManager.GetUserIdBySessionIdOrNull(customer.SessionId);
                 if (!(await customerRepository.ExistsByName(customer.Name, userId.Value)))
                 {
                     return await customerRepository.AddCustomer(customer, userId.Value, shippingInfoId, paymentInfoId);
@@ -184,9 +185,9 @@ namespace Webshop.BL
 
         private async Task<bool> TryUpdateCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string oldName)
         {
-            if (await sessionRepository.ValidateSessionId(customer.SessionId))
+            if (await sessionManager.ValidateSessionId(customer.SessionId))
             {
-                var userId = await sessionRepository.GetUserIdBySessionIdOrNull(customer.SessionId);
+                var userId = await sessionManager.GetUserIdBySessionIdOrNull(customer.SessionId);
                 if (await customerRepository.ExistsByName(oldName, userId.Value))
                 {
                     return await customerRepository.UpdateCustomer(customer, userId.Value, shippingInfoId, paymentInfoId, oldName);

@@ -9,7 +9,7 @@ namespace Webshop.Controllers
     public class CustomerController : Controller
     {
         private readonly CustomerManager customerManager;
-        public CustomerController(CustomerManager customerManager)
+        public CustomerController(CustomerManager customerManager, SessionManager sessionManager)
         {
             this.customerManager = customerManager;
         }
