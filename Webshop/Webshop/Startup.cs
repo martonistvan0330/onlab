@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Webshop.BL;
 using Webshop.DAL.EF;
 using Webshop.DAL.Repositories;
 using Webshop.DAL.Repositories.Interfaces;
 
-namespace Webshop
+namespace Webshop.Web
 {
     public class Startup
     {
@@ -46,15 +47,29 @@ namespace Webshop
             services.AddTransient<SessionManager>();
             services.AddTransient<UserManager>();
 
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddRouting();
+            services.AddRazorPages();
+            // services.AddControllers().AddNewtonsoftJson();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+
+            app.UseStaticFiles();
+
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

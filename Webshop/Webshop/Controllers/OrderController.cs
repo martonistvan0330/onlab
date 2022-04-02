@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Webshop.BL;
 using Webshop.DAL.Models;
 
-namespace Webshop.Controllers
+namespace Webshop.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
