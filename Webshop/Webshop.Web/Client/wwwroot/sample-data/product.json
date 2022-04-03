@@ -1,0 +1,26 @@
+﻿[
+  {
+    "name": "T-Shirt 1",
+    "price": 1234.0
+  },
+  {
+    "name": "T-Shirt 2",
+    "price": 2345.0
+  },
+  {
+    "name": "Crewneck 1",
+    "price": 4567.0
+  },
+  {
+    "name": "Hoodie 3",
+    "price": 7890.0
+  },
+  {
+    "name": "Sweater 1",
+    "price": 7654.0
+  },
+  {
+    "name": "Bandana 1",
+    "price": 2400.0
+  }
+]
