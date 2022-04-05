@@ -1,11 +1,9 @@
 ﻿@page "/fetchdata"
 @using Webshop.Web.Shared.Models
 @using System.Net.Http.Json
-@using Webshop.BL
 @inject HttpClient httpClient
-@inject ProductManager productManager
 
-<PageTitle>Weather forecast</PageTitle>
+<PageTitle>Products</PageTitle>
 
 <h1>Products</h1>
 
@@ -35,12 +33,10 @@ else
 }
 
 @code {
-    private IEnumerable<Webshop.DAL.Models.Product> products;
-    //private Product[]? products;
+    private Product[]? products;
 
     protected override async Task OnInitializedAsync()
     {
-        products = await productManager.GetMainPageProducts();
-        // products = await httpClient.GetFromJsonAsync<Product[]>("api/product/main");
+        products = await httpClient.GetFromJsonAsync<Product[]>("api/product/main");
     }
 }

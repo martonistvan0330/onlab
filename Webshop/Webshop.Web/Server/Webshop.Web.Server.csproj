@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\WebShop\Webshop.BL\Webshop.BL.csproj" />
+    <ProjectReference Include="..\..\Webshop.BL\Webshop.BL.csproj" />
+    <ProjectReference Include="..\..\Webshop.DAL\Webshop.DAL.csproj" />
     <ProjectReference Include="..\Client\Webshop.Web.Client.csproj" />
     <ProjectReference Include="..\Shared\Webshop.Web.Shared.csproj" />
   </ItemGroup>

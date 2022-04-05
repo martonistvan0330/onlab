@@ -15,7 +15,7 @@ namespace Webshop.Web.Server.Controllers
         }
 
         [HttpGet("main")]
-        public async Task<IEnumerable<Product>> GetMainPageProducts()
+        public async Task<IEnumerable<MainPageProduct>> GetMainPageProducts()
             => await productManager.GetMainPageProducts();
 
         [HttpGet("filter")]

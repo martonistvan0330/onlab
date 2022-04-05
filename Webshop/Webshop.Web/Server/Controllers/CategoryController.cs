@@ -15,12 +15,12 @@ namespace Webshop.Web.Server.Controllers
         public async Task<IEnumerable<Category>> GetMainCategories()
             => await categoryManager.ListMainCategories();
 
-        [HttpGet]
+        [HttpGet("{parentCategoryId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Category>>> GetSubcategoriesByParentCategory([FromQuery] string parentCategoryName)
+        public async Task<ActionResult<IEnumerable<Category>>> GetSubcategoriesByParentCategory([FromRoute] int parentCategoryId)
         {
-            var categories = await categoryManager.ListSubcategoriesByParentCategory(parentCategoryName);
+            var categories = await categoryManager.ListSubcategoriesByParentCategory(parentCategoryId);
             if (categories.Count <= 0)
             {
                 return NotFound();
