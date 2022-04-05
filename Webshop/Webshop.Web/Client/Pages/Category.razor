@@ -1,0 +1,28 @@
+﻿@page "/category/{id:int}"
+@using Webshop.Web.Shared.Models
+@using System.Net.Http.Json
+@inject HttpClient httpClient
+
+<h3>Category @Id</h3>
+
+@if (subCategories != null)
+{
+    <ul>
+    @foreach (var category in subCategories)
+    {
+        <li>(@category.Id) @category.Name</li>
+    }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Webshop.Web.Shared.Models.Category[]? subCategories;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        subCategories = await httpClient.GetFromJsonAsync<Webshop.Web.Shared.Models.Category[]>($"api/category/{Id}");
+    }
+}
