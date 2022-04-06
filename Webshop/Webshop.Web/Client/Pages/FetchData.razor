@@ -1,4 +1,4 @@
-﻿@page "/fetchdata"
+@page "/fetchdata"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Webshop.Web.Shared.Models
@@ -6,11 +6,10 @@
 @attribute [Authorize]
 @inject PrivateClient client
 
+
 <PageTitle>Products</PageTitle>
 
 <h1>Products</h1>
-
-<p>This component demonstrates fetching data from the server.</p>
 
 @if (products == null)
 {

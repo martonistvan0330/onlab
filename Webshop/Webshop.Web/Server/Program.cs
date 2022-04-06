@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Webshop.BL;
 using Webshop.DAL.EF;
@@ -10,6 +11,7 @@ using Webshop.DAL.Repositories.Interfaces;
 using Webshop.Web.Server.Data;
 using Webshop.Web.Server.Models;
 using Webshop.Web.Server.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,7 +104,6 @@ builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
     facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
     facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
 });
-
 builder.Services.AddDbContext<WebshopDbContext>(options => options.UseSqlServer("Server = (localdb)\\mssqllocaldb; Database = Webshop; Trusted_Connection = True;"));
 
 builder.Services.AddTransient<IAddressRepository, AddressRepository>();
@@ -132,7 +133,6 @@ builder.Services.AddTransient<ProductManager>();
 builder.Services.AddTransient<SessionManager>();
 builder.Services.AddTransient<UserManager>();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -158,7 +158,6 @@ app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapRazorPages();
 app.MapControllers();
