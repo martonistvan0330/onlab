@@ -1,14 +1,23 @@
-@page "/"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+﻿@page "/products"
 @using Webshop.Web.Shared.Models
 @using Webshop.Web.Client.Clients
 @using System.Net.Http.Json
+
 @inject PublicClient client
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Products</PageTitle>
 
-<h1>Products</h1>
+<h3>Category @CategoryId</h3>
+
+@if (subCategories != null)
+{
+    <ul>
+    @foreach (var category in subCategories)
+    {
+        <li>(@category.Id) @category.Name</li>
+    }
+    </ul>
+}
 
 @if (products == null)
 {
@@ -38,10 +47,17 @@ else
 }
 
 @code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int CategoryId { get; set; }
+
+    private Category[]? subCategories;
+
     private Product[]? products;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        products = await client.GetMainPageProducts();
+        subCategories = await client.GetSubCategories(CategoryId);
+        products = await client.GetFilteredProducts(CategoryId);
     }
 }

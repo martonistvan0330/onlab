@@ -47,8 +47,10 @@ namespace Webshop.DAL.Repositories.Extensions
 
         public static async Task<IReadOnlyCollection<Models.Product>> GetProducts(this IQueryable<Product> products)
         {
-            return await products.Select(dbRec => dbRec.GetProduct())
-                                  .ToArrayAsync();
+            return await products
+                            .WithImages()           
+                            .Select(dbRec => dbRec.GetProduct())
+                            .ToArrayAsync();
         }
 
         public static async Task<IReadOnlyCollection<Models.Product>> GetProducts(this IQueryable<Product> products, int pageNum, int productsPerPage = 6)
@@ -56,17 +58,9 @@ namespace Webshop.DAL.Repositories.Extensions
             return await products
                             .Skip((pageNum - 1) * productsPerPage)
                             .Take(productsPerPage)
-                            .Select(dbRec => dbRec.GetProduct())
-                            .ToArrayAsync();
+                            .GetProducts();
         }
 
-        public static async Task<IReadOnlyCollection<Models.MainPageProduct>> GetMainPageProducts(this IQueryable<Product> products)
-        {
-            return await products
-                                .Include(dbRec => dbRec.ProductImages)
-                                .Select(dbRec => dbRec.GetMainPageProduct())
-                                .ToArrayAsync();
-        }
         public async static Task<Models.ProductDetails?> GetProductDetailsOrNull(this IQueryable<Product> products)
         {
             return await products
@@ -112,15 +106,13 @@ namespace Webshop.DAL.Repositories.Extensions
         public static IQueryable<Product> WithVat(this IQueryable<Product> products)
             => products.Include(p => p.Vat);
 
+        public static IQueryable<Product> WithImages(this IQueryable<Product> products)
+            => products.Include(p => p.ProductImages);
+
         public static Models.Product GetProduct(this Product dbRecord)
-            => new Models.Product(dbRecord.Name, dbRecord.Price);
+            => new Models.Product(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource);
 
         public static Models.ProductDetails GetProductDetails(this Product dbRecord)
             => new Models.ProductDetails(dbRecord.Name, dbRecord.Price, dbRecord.Vat.Percentage);
-
-        public static Models.MainPageProduct GetMainPageProduct(this Product dbRecord)
-        {
-            return new Models.MainPageProduct(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource);
-        }
     }
 }

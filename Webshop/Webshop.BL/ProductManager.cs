@@ -18,7 +18,7 @@ namespace Webshop.BL
             this.sizeRepository = sizeRepository;
         }
 
-        public async Task<IReadOnlyCollection<MainPageProduct>> GetMainPageProducts()
+        public async Task<IReadOnlyCollection<Product>> GetMainPageProducts()
         {
             var productCount = productRepository.GetProductCount();
             var random = new Random();
@@ -35,9 +35,9 @@ namespace Webshop.BL
             return await productRepository.GetMainPageProducts(productIds);
         }
 
-        public async Task<IReadOnlyCollection<Product>> GetFilteredProducts(string categoryName, double minPrice, double maxPrice, string? sizes, int page)
+        public async Task<IReadOnlyCollection<Product>> GetFilteredProducts(int categoryId, double minPrice, double maxPrice, string? sizes, int page)
         {
-            var categoryIds = await categoryRepository.GetCategoryIdsByParentCategory(categoryName);
+            var categoryIds = await categoryRepository.GetCategoryIdsByParentCategory(categoryId);
 
             if (categoryIds.Count == 0)
             {

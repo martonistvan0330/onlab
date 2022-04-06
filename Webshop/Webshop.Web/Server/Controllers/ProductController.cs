@@ -15,15 +15,15 @@ namespace Webshop.Web.Server.Controllers
         }
 
         [HttpGet("main")]
-        public async Task<IEnumerable<MainPageProduct>> GetMainPageProducts()
+        public async Task<IEnumerable<Product>> GetMainPageProducts()
             => await productManager.GetMainPageProducts();
 
         [HttpGet("filter")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] string categoryName, [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 0, [FromQuery] string? sizes = null, [FromQuery] int page = 1)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] int categoryId, [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 0, [FromQuery] string? sizes = null, [FromQuery] int page = 1)
         {
-            var products = await productManager.GetFilteredProducts(categoryName, minPrice, maxPrice, sizes, page);
+            var products = await productManager.GetFilteredProducts(categoryId, minPrice, maxPrice, sizes, page);
             
             if (products.Count <= 0)
             {

@@ -18,11 +18,11 @@ namespace Webshop.DAL.Repositories
             return dbContext.Product.Count();
         }
 
-        public async Task<IReadOnlyCollection<Models.MainPageProduct>> GetMainPageProducts(List<int> productIds)
+        public async Task<IReadOnlyCollection<Models.Product>> GetMainPageProducts(List<int> productIds)
         {
             return await dbContext.Product
                             .FindByIdList(productIds)
-                            .GetMainPageProducts();
+                            .GetProducts();
         }
 
         public async Task<IReadOnlyCollection<Models.Product>> GetFilteredProducts(List<int> categoryIds, double minPrice, double maxPrice, List<string> sizes, int page)
@@ -31,7 +31,7 @@ namespace Webshop.DAL.Repositories
                             .FilterByCategory(categoryIds)
                             .FilterByPrice(minPrice, maxPrice)
                             .FilterBySize(sizes)
-                            .GetProducts(page, 3);
+                            .GetProducts(page);
         }
 
         public async Task<ProductDetails?> GetProductDetailsOrNull(string productName)

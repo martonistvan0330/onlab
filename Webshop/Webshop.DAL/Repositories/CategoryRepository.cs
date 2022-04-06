@@ -34,9 +34,9 @@ namespace Webshop.DAL.Repositories
             }
         }
 
-        public async Task<IReadOnlyCollection<int>> GetCategoryIdsByParentCategory(string categoryName)
+        public async Task<IReadOnlyCollection<int>> GetCategoryIdsByParentCategory(int categoryId)
         {
-            var category = await dbContext.Category.GetByNameOrNull(categoryName);
+            var category = await dbContext.Category.GetByIdOrNull(categoryId);
             if (category == null)
             {
                 return Array.Empty<int>();

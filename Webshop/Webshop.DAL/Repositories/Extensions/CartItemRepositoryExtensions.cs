@@ -33,8 +33,10 @@ namespace Webshop.DAL.Repositories.Extensions
             return new Models.CartItemWithId(
                 dbRecord.Id,
                 new Models.Product(
+                    dbRecord.ProductId,
                     dbRecord.Product.Name,
-                    dbRecord.Product.Price
+                    dbRecord.Product.Price,
+                    "asd"
                     ),
                 dbRecord.Size.Name,
                 dbRecord.Amount,
