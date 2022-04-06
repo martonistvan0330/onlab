@@ -1,7 +1,10 @@
-﻿@page "/"
+@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Webshop.Web.Shared.Models
+@using Webshop.Web.Client.Clients
 @using System.Net.Http.Json
-@inject HttpClient httpClient
+@inject PublicClient client
 
 <PageTitle>Home</PageTitle>
 
@@ -37,6 +40,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        products = await httpClient.GetFromJsonAsync<Product[]>("api/product/main");
+        products = await client.GetMainPageProducts();
     }
 }

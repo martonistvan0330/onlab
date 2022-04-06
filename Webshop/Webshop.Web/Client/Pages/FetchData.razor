@@ -1,7 +1,11 @@
-﻿@page "/fetchdata"
+@page "/fetchdata"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Webshop.Web.Shared.Models
-@using System.Net.Http.Json
-@inject HttpClient httpClient
+@using Webshop.Web.Client.Clients
+@attribute [Authorize]
+@inject PrivateClient client
+
 
 <PageTitle>Products</PageTitle>
 
@@ -37,6 +41,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        products = await httpClient.GetFromJsonAsync<Product[]>("api/product/main");
+        try
+        {
+            products = await client.GetProducts();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
     }
 }
