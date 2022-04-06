@@ -97,6 +97,12 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
         googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     });
 
+builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
+{
+    facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
+    facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+});
+
 builder.Services.AddDbContext<WebshopDbContext>(options => options.UseSqlServer("Server = (localdb)\\mssqllocaldb; Database = Webshop; Trusted_Connection = True;"));
 
 builder.Services.AddTransient<IAddressRepository, AddressRepository>();
