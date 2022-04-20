@@ -1,11 +1,10 @@
 ﻿@page "/products"
+
 @using Webshop.Web.Shared.Models
 @using Webshop.Web.Client.Clients
 @using System.Net.Http.Json
 
 @inject PublicClient client
-
-<PageTitle>Products</PageTitle>
 
 <h3>Category @CategoryId</h3>
 
@@ -29,6 +28,8 @@ else
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3">
     @foreach (var product in products)
     {
+        string link = $"addtocart?productid={product.Id}&amount=1&sizeid=3";
+
         <div class="col mb-4">
             <div class="card text-white bg-dark border-dark" style="width: 18rem;">
                 <NavLink href="counter">
@@ -36,7 +37,7 @@ else
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
                         <p class="card-text">@product.Price Ft</p>
-                        <NavLink class="btn btn-primary" href="fetchdata">Add to cart</NavLink>
+                        <NavLink class="btn btn-primary" href="@link">Add to cart</NavLink>
                     </div>
                 </NavLink>
             </div>

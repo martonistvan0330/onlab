@@ -40,7 +40,8 @@ namespace Webshop.DAL.Repositories.Extensions
                     ),
                 dbRecord.Size.Name,
                 dbRecord.Amount,
-                dbRecord.Price
+                100
+                //dbRecord.Price
                 );
         }
 

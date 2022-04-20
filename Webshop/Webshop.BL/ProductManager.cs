@@ -104,18 +104,9 @@ namespace Webshop.BL
             }
         }
 
-        public async Task<(bool, int)> GetStockByNameSize(string productName, string size)
+        public async Task<int?> GetStockByProductSize(int productId, int sizeId)
         {
-            if (await productRepository.ExistsByName(productName))
-            {
-                var productId = await productRepository.GetProductIdByName(productName);
-                var stock = await productStockRepository.GetStockByProductIdSize(productId.Value, size);
-                return (true, stock.Value);
-            }
-            else
-            {
-                return (false, -1);
-            }
+            return await productStockRepository.GetStockByProductSizeOrNull(productId, sizeId);
         }
 
         public async Task<(bool, int)> GetSizeIdByName(string sizeName)

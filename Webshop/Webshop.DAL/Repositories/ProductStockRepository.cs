@@ -30,12 +30,12 @@ namespace Webshop.DAL.Repositories
                 .GetStocks();
         }
 
-        public async Task<int?> GetStockByProductIdSize(int productId, string size)
+        public async Task<int?> GetStockByProductSizeOrNull(int productId, int sizeId)
         {
             return await dbContext.ProductStock
                 .WithProduct()
                 .FindProductStockByProductId(productId)
-                .FilterBySize(size)
+                .FilterBySize(sizeId)
                 .GetStock();
         }
     }

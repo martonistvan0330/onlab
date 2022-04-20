@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.BL", "Webshop.BL\We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.DAL", "Webshop.DAL\Webshop.DAL.csproj", "{EB4D1326-33E4-4FA1-9AF6-49F3D9DD3787}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webshop.Web.Server", "Webshop.Web\Server\Webshop.Web.Server.csproj", "{376A1BD1-3BE4-470E-9D2B-7CB2731816EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.Web.Server", "Webshop.Web\Server\Webshop.Web.Server.csproj", "{376A1BD1-3BE4-470E-9D2B-7CB2731816EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webshop.Web.Client", "Webshop.Web\Client\Webshop.Web.Client.csproj", "{7D63225C-C0A9-4EF0-9069-88BA92381AFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.Web.Client", "Webshop.Web\Client\Webshop.Web.Client.csproj", "{7D63225C-C0A9-4EF0-9069-88BA92381AFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webshop.Web.Shared", "Webshop.Web\Shared\Webshop.Web.Shared.csproj", "{C953DA7F-0744-4FAB-B649-C44301A3BF2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.Web.Shared", "Webshop.Web\Shared\Webshop.Web.Shared.csproj", "{C953DA7F-0744-4FAB-B649-C44301A3BF2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

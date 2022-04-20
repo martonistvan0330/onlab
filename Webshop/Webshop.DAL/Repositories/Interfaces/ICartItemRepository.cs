@@ -4,7 +4,7 @@ namespace Webshop.DAL.Repositories.Interfaces
 {
     public interface ICartItemRepository
     {
-        Task<(bool, int)> AddCartItem(CartItem cartItem, int cartId, int productId, int sizeId);
+        Task<(bool, int)> AddCartItem(NewCartItem cartItem, int cartId);
         Task<bool> UpdateCartItem(int cartItemId, int cartId, int amount);
         Task<bool> RemoveCartItem(int cartItemId, int cartId);
         Task<int> GetAmountById(int cartItemId);

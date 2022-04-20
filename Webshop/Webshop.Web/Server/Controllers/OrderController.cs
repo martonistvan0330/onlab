@@ -15,7 +15,7 @@ namespace Webshop.Web.Server.Controllers
             this.orderManager = orderManager;
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
@@ -36,7 +36,6 @@ namespace Webshop.Web.Server.Controllers
             {
                 return NotFound("invalid sessionID");
             }
-        }
-
+        }*/
     }
 }

@@ -14,10 +14,10 @@ namespace Webshop.DAL.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task<(bool, int)> AddCartItem(Models.CartItem cartItem, int cartId, int productId, int sizeId)
+        public async Task<(bool, int)> AddCartItem(Models.NewCartItem cartItem, int cartId)
         {
             var dbCartItem = await dbContext.CartItem
-                                       .GetCartItemByCartProductSize(cartId, productId, sizeId);
+                                       .GetCartItemByCartProductSize(cartId, cartItem.ProductId, cartItem.SizeId);
             if (dbCartItem != null)
             {
                 dbCartItem.Amount += cartItem.Amount;
@@ -28,10 +28,9 @@ namespace Webshop.DAL.Repositories
                 dbCartItem = new CartItem()
                 {
                     CartId = cartId,
-                    ProductId = productId,
-                    SizeId = sizeId,
+                    ProductId = cartItem.ProductId,
+                    SizeId = cartItem.SizeId,
                     Amount = cartItem.Amount,
-                    Price = cartItem.Product.Price * cartItem.Amount,
                 };
 
                 dbContext.CartItem.Add(dbCartItem);

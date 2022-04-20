@@ -10,9 +10,9 @@ namespace Webshop.DAL.Repositories.Extensions
             return productStocks.Where(ps => ps.Stock > minStock);
         }
 
-        public static IQueryable<ProductStock> FilterBySize(this IQueryable<ProductStock> productStocks, string size)
+        public static IQueryable<ProductStock> FilterBySize(this IQueryable<ProductStock> productStocks, int sizeId)
         {
-            return productStocks.Where(ps => ps.Size.Name.Equals(size));
+            return productStocks.Where(ps => ps.SizeId == sizeId);
         }
 
         public static IQueryable<ProductStock> FindProductStockByProductId(this IQueryable<ProductStock> productStocks, int productId)

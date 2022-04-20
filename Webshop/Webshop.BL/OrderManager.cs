@@ -34,7 +34,7 @@ namespace Webshop.BL
             return await sessionManager.ValidateSessionId(sessionId);
         }
 
-        public async Task<bool> TryCreateOrder(int customerId, string sessionId)
+        /*public async Task<bool> TryCreateOrder(int customerId, string sessionId)
         {
             using (var transaction = new TransactionScope(
                         TransactionScopeOption.Required,
@@ -80,6 +80,6 @@ namespace Webshop.BL
                 }
                 return false;
             }
-        }
+        }*/
     }
 }

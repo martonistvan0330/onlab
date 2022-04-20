@@ -16,7 +16,7 @@ namespace Webshop.DAL.Repositories
             var dbOrderItem = new OrderItem()
             {
                 Amount = cartItem.Amount,
-                Price = cartItem.Price,
+                //Price = cartItem.Price,
                 OrderId = orderId,
                 ProductId = cartItem.ProductId,
                 StatusId = statusId,

@@ -68,19 +68,14 @@ namespace Webshop.DAL.EF
                     .HasForeignKey(d => d.AddressId);
             });
 
-            modelBuilder.Entity<Cart>(entity =>
+            /*modelBuilder.Entity<Cart>(entity =>
             {
                 entity.ToTable(nameof(Cart));
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
-                entity.Property(e => e.SessionId).HasMaxLength(50);
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Carts)
-                    .HasForeignKey(d => d.UserId);
-            });
+            });*/
 
             modelBuilder.Entity<CartItem>(entity =>
             {

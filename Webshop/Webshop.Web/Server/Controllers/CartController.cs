@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Webshop.BL;
 using Webshop.DAL.Models;
+using Webshop.Web.Server.Models;
 
 namespace Webshop.Web.Server.Controllers
 {
@@ -14,7 +16,7 @@ namespace Webshop.Web.Server.Controllers
             this.cartManager = cartManager;
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<CartItemWithId>>> GetCartItems([FromQuery] string sessionId)
@@ -28,9 +30,9 @@ namespace Webshop.Web.Server.Controllers
             {
                 return NotFound("invalid sessionID");
             }
-        }
+        }*/
 
-        [HttpPut("{cartItemId}")]
+        /*[HttpPut("{cartItemId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
@@ -51,32 +53,25 @@ namespace Webshop.Web.Server.Controllers
             {
                 return NotFound("invalid sessionID");
             }
-        }
+        }*/
 
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> AddCartItem([FromBody] CartItem cartItem, [FromQuery] string sessionId)
+        public async Task<ActionResult> AddCartItem([FromBody] NewCartItem cartItem, [FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
+            if (await cartManager.TryAddCartItem(cartItem, userId))
             {
-                if (await cartManager.TryAddCartItem(cartItem, sessionId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Conflict();
-                }
+                return Ok();
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return Conflict();
             }
         }
 
-        [HttpDelete("{cartItemId}")]
+        /*[HttpDelete("{cartItemId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
@@ -97,6 +92,6 @@ namespace Webshop.Web.Server.Controllers
             {
                 return NotFound("invalid sessionID");
             }
-        }
+        }*/
     }
 }
