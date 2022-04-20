@@ -16,44 +16,29 @@ namespace Webshop.Web.Server.Controllers
             this.cartManager = cartManager;
         }
 
-        /*[HttpGet]
+        [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<CartItemWithId>>> GetCartItems([FromQuery] string sessionId)
+        public async Task<IEnumerable<CartItem>> GetCartItems([FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
-            {
-                var cartItems = await cartManager.ListCartItems(sessionId);
-                return Ok(cartItems);
-            }
-            else
-            {
-                return NotFound("invalid sessionID");
-            }
-        }*/
+            return await cartManager.ListCartItems(userId);
+        }
 
-        /*[HttpPut("{cartItemId}")]
+        [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> UpdateCartItem([FromRoute]int cartItemId, [FromQuery] string sessionId, [FromQuery] int amount)
+        public async Task<ActionResult> UpdateCartItem([FromBody] UpdateCartItem cartItem, [FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
+            if (await cartManager.TryUpdateCartItem(cartItem, userId))
             {
-                if (await cartManager.TryUpdateCartItem(cartItemId, sessionId, amount))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Conflict();
-                }
+                return Ok();
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return Conflict();
             }
-        }*/
+        }
 
         [HttpPost]
         [ProducesResponseType(200)]
@@ -71,27 +56,20 @@ namespace Webshop.Web.Server.Controllers
             }
         }
 
-        /*[HttpDelete("{cartItemId}")]
+        [HttpDelete("{cartItemId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> RemoveCartItem([FromRoute] int cartItemId, [FromQuery] string sessionId)
+        public async Task<ActionResult> RemoveCartItem([FromRoute] int cartItemId, [FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
+            if (await cartManager.TryRemoveCartItem(cartItemId, userId))
             {
-                if (await cartManager.TryRemoveCartItem(cartItemId, sessionId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Conflict();
-                }
+                return Ok();
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return Conflict();
             }
-        }*/
+        }
     }
 }

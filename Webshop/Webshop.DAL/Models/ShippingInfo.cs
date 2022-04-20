@@ -2,12 +2,14 @@
 {
     public class ShippingInfo
     {
-        public readonly ShippingMethod ShippingMethod;
+        public readonly int ShippingMethodId;
+        public readonly string ShippingMethodName;
         public readonly AddressInfo ShippingAddressInfo;
 
-        public ShippingInfo(ShippingMethod shippingMethod, AddressInfo shippingAddressInfo)
+        public ShippingInfo(int shippingMethodId, string shippingMethodName, AddressInfo shippingAddressInfo)
         {
-            ShippingMethod = shippingMethod;
+            ShippingMethodId = shippingMethodId;
+            ShippingMethodName = shippingMethodName;
             ShippingAddressInfo = shippingAddressInfo;
         }
     }

@@ -11,12 +11,12 @@ namespace Webshop.DAL.Repositories
         public OrderItemRepository(WebshopDbContext dbContext)
             => this.dbContext = dbContext;
 
-        public async Task<(bool, int)> AddOrderItem(CartItem cartItem, int orderId, int statusId)
+        public async Task<(bool, int)> AddOrderItem(Models.CartItem cartItem, int orderId, int statusId)
         {
             var dbOrderItem = new OrderItem()
             {
                 Amount = cartItem.Amount,
-                //Price = cartItem.Price,
+                Price = cartItem.Price,
                 OrderId = orderId,
                 ProductId = cartItem.ProductId,
                 StatusId = statusId,

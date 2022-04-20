@@ -34,29 +34,35 @@ namespace Webshop.BL
             return await sessionManager.ValidateSessionId(sessionId);
         }
 
-        /*public async Task<bool> TryCreateOrder(int customerId, string sessionId)
+        public async Task<(bool, int)> TryCreateOrder(string userId, int customerId)
         {
             using (var transaction = new TransactionScope(
                         TransactionScopeOption.Required,
                         new TransactionOptions() { IsolationLevel = IsolationLevel.RepeatableRead },
                         TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (await customerManager.ExistsById(customerId, sessionId))
+                if (await customerManager.ExistsById(userId, customerId))
                 {
                     var order = await orderRepository.CreateNewOrder(customerId);
-                    var cartItems = await cartManager.ListCartItems(sessionId);
+                    var cartItems = await cartManager.ListCartItems(userId);
                     bool success = true;
                     foreach (var cartItem in cartItems)
                     {
-                        var dbCartItem = await cartManager.GetCartItemByIdOrNull(cartItem.Id);
-                        if (dbCartItem != null)
+                        var (orderItemSuccess, orderItemId) = await orderItemRepository.AddOrderItem(cartItem, order.Id, order.StatusId);
+                        if (orderItemSuccess)
                         {
-                            var (orderItemSuccess, orderItemId) = await orderItemRepository.AddOrderItem(dbCartItem, order.Id, order.StatusId);
-                            if (orderItemSuccess)
+                            var stock = await productManager.GetStockByProductSize(cartItem.ProductId, cartItem.SizeId);
+                            var amount = await orderItemRepository.GetAmountById(orderItemId);
+                            if (stock >= amount)
                             {
-                                var (stockSuccess, stock) = await productManager.GetStockByNameSize(cartItem.Product.Name, cartItem.Size);
-                                var amount = await orderItemRepository.GetAmountById(orderItemId);
-                                if (!(stockSuccess && stock >= amount))
+                                if (await productManager.UpdateStock(cartItem.ProductId, cartItem.SizeId, amount))
+                                {
+                                    if (!(await cartManager.TryRemoveCartItem(cartItem.Id, userId)))
+                                    {
+                                        success = false;
+                                    }
+                                }
+                                else
                                 {
                                     success = false;
                                 }
@@ -70,16 +76,15 @@ namespace Webshop.BL
                         {
                             success = false;
                         }
-                        
                     }
                     if (success)
                     {
                         transaction.Complete();
-                        return true;
+                        return (true, order.Id);
                     }
                 }
-                return false;
+                return (false, -1);
             }
-        }*/
+        }
     }
 }

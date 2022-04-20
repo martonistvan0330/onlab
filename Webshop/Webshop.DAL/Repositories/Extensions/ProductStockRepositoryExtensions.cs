@@ -40,6 +40,12 @@ namespace Webshop.DAL.Repositories.Extensions
                             .ToArrayAsync();
         }
 
+        public async static Task<ProductStock?> GetProductStockOrNull(this IQueryable<ProductStock> productstocks)
+        {
+            return await productstocks
+                            .SingleOrDefaultAsync();
+        }
+
         public async static Task<int?> GetStock(this IQueryable<ProductStock> productstocks)
         {
             return await productstocks

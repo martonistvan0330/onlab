@@ -14,7 +14,7 @@ namespace Webshop.Web.Server.Controllers
             this.customerManager = customerManager;
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers([FromQuery] string sessionId)
@@ -62,36 +62,30 @@ namespace Webshop.Web.Server.Controllers
             {
                 return NotFound("invalid sessionID");
             }
-        }
+        }*/
 
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> AddCustomer([FromBody] Customer customer)
+        public async Task<ActionResult<int>> AddCustomer([FromBody] Customer customer, [FromQuery] string userId)
         {
-            if (await customerManager.ValidateSessionId(customer.SessionId))
+            if (await customerManager.ExistsByName(customer.Name, userId))
             {
-                if (await customerManager.ExistsByName(customer.Name, customer.SessionId))
-                {
-                    return BadRequest("name not available");
-                }
-                else
-                {
-                    if (await customerManager.TryAddCustomerWithAll(customer))
-                    {
-                        return Ok();
-                    }
-                    else
-                    {
-                        return Conflict();
-                    }
-                }
+                return BadRequest(-1);
             }
             else
             {
-                return NotFound("invalid sessionID");
+                var (success, customerId) = await customerManager.TryAddCustomerWithAll(customer, userId);
+                if (success)
+                {
+                    return Ok(customerId);
+                }
+                else
+                {
+                    return Conflict(-1);
+                }
             }
         }
     }

@@ -7,14 +7,19 @@ using System.Threading.Tasks;
 
 namespace Webshop.Web.Shared.Models
 {
-    public class CartItem
+    public class UpdateCartItem
     {
         public int Id { get; set; }
-        public int ProductId { get; set; }
-        public string ProductName { get; set; }
         public int SizeId { get; set; }
-        public string SizeName { get; set; }
         public int Amount { get; set; }
-        public double Price { get; set; }
+
+        public JsonObject ToJson()
+        {
+            var json = new JsonObject();
+            json.Add(nameof(Id), Id);
+            json.Add(nameof(SizeId), SizeId);
+            json.Add(nameof(Amount), Amount);
+            return json;
+        }
     }
 }

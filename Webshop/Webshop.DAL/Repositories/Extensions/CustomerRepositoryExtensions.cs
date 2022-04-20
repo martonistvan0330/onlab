@@ -5,9 +5,9 @@ namespace Webshop.DAL.Repositories.Extensions
 {
     public static class CustomerRepositoryExtensions
     {
-        public static IQueryable<Customer> FilterByUser(this IQueryable<Customer> customers, int userId)
+        public static IQueryable<Customer> FilterByUser(this IQueryable<Customer> customers, string userId)
         {
-            return customers.Where(c => c.UserId == userId);
+            return customers.Where(c => c.UserId.Equals(userId));
         }
 
         public static IQueryable<Customer> FindByName(this IQueryable<Customer> customers, string customerName)
@@ -20,7 +20,7 @@ namespace Webshop.DAL.Repositories.Extensions
             return customers.Where(c => c.Id == customerId);
         }
 
-        public static async Task<bool> ExistsByName(this IQueryable<Customer> customers, string customerName, int userId)
+        public static async Task<bool> ExistsByName(this IQueryable<Customer> customers, string customerName, string userId)
         {
             var dbCustomer = await customers
                                     .FilterByUser(userId)
@@ -36,7 +36,7 @@ namespace Webshop.DAL.Repositories.Extensions
             }
         }
 
-        public static async Task<bool> ExistsById(this IQueryable<Customer> customers, int customerId, int userId)
+        public static async Task<bool> ExistsById(this IQueryable<Customer> customers, int customerId, string userId)
         {
             var dbCustomer = await customers
                                     .FilterByUser(userId)
@@ -52,27 +52,27 @@ namespace Webshop.DAL.Repositories.Extensions
             }
         }
 
-        public static async Task<int> GetIdByName(this IQueryable<Customer> customers, string customerName, int userId)
+        /*public static async Task<int> GetIdByName(this IQueryable<Customer> customers, string customerName, int userId)
         {
             return await customers
                             .FilterByUser(userId)
                             .FindByName(customerName)
                             .GetId();
-        }
+        }*/
 
-        public static async Task<IReadOnlyCollection<Models.Customer>> GetCustomers(this IQueryable<Customer> customers)
+        /*public static async Task<IReadOnlyCollection<Models.Customer>> GetCustomers(this IQueryable<Customer> customers)
         {
             return await customers.Select(dbRec => dbRec.GetCustomer())
                                   .ToArrayAsync();
-        }
+        }*/
 
-        public static async Task<Customer?> GetCustomerByNameOrNull(this IQueryable<Customer> customers, string customerName, int userId)
+        /*public static async Task<Customer?> GetCustomerByNameOrNull(this IQueryable<Customer> customers, string customerName, int userId)
         {
             return await customers
                             .FilterByUser(userId)
                             .FindByName(customerName)
                             .GetCustomerOrNull();
-        }
+        }*/
 
         public static IQueryable<Customer> WithShippingInfo(this IQueryable<Customer> customers)
         {
@@ -92,8 +92,8 @@ namespace Webshop.DAL.Repositories.Extensions
                     .Include(c => c.PaymentInfo.BillingAddressInfo.Address);
         }
 
-        public static Models.Customer GetCustomer(this Customer dbRecord)
-            => new Models.Customer("1",
+        /*public static Models.Customer GetCustomer(this Customer dbRecord)
+            => new Models.Customer(
                 dbRecord.Name,
                 new Models.ShippingInfo(
                     new Models.ShippingMethod(
@@ -130,7 +130,7 @@ namespace Webshop.DAL.Repositories.Extensions
                         dbRecord.PaymentInfo.BillingAddressInfo.PhoneNumber
                         )
                     )
-                );
+                );*/
 
         public static async Task<int> GetId(this IQueryable<Customer> customers)
             => await customers.Select(c => c.Id).SingleAsync();

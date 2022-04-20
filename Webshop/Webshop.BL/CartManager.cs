@@ -34,18 +34,18 @@ namespace Webshop.BL
             return await cartItemRepository.GetByIdOrNull(cartItemId);
         }
 
-        /*public async Task<IReadOnlyCollection<CartItemWithId>> ListCartItems(string sessionId)
+        public async Task<IReadOnlyCollection<CartItem>> ListCartItems(string userId)
         {
-            var cart = await cartRepository.GetCartBySessionIdOrNull(sessionId);
+            var cart = await cartRepository.GetCartByUserIdOrNull(userId);
             if (cart == null)
             {
-                return Array.Empty<CartItemWithId>();
+                return Array.Empty<CartItem>();
             }
             else
             {
                 return await cartItemRepository.ListCartItems(cart.Id);
             }
-        }*/
+        }
 
         public async Task<bool> TryAddCartItem(NewCartItem cartItem, string userId)
         {
@@ -73,54 +73,55 @@ namespace Webshop.BL
             }
             return false;
         }
-    }
 
-    /*public async Task<bool> TryUpdateCartItem(int cartItemId, string sessionId, int amount)
-    {
-        using (var transaction = new TransactionScope(
-                    TransactionScopeOption.Required,
-                    new TransactionOptions() { IsolationLevel = IsolationLevel.RepeatableRead },
-                    TransactionScopeAsyncFlowOption.Enabled))
+        public async Task<bool> TryUpdateCartItem(UpdateCartItem cartItem, string userId)
         {
-            var cart = await cartRepository.GetCartBySessionIdOrNull(sessionId);
-            if (cart != null)
+            using (var transaction = new TransactionScope(
+                        TransactionScopeOption.Required,
+                        new TransactionOptions() { IsolationLevel = IsolationLevel.RepeatableRead },
+                        TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (await cartItemRepository.UpdateCartItem(cartItemId, cart.Id, amount))
+                var cart = await cartRepository.GetCartByUserIdOrNull(userId);
+                if (cart != null)
                 {
-                    var cartItem = await cartItemRepository.GetByIdOrNull(cartItemId);
-                    var (stockSuccess, stock) = await productManager.GetStockByNameSize(cartItem.Product.Name, cartItem.Size.Name);
-                    if (stockSuccess && stock >= amount)
+                    var (updateSuccess, productId) = await cartItemRepository.UpdateCartItem(cartItem, cart.Id);
+                    if (updateSuccess)
                     {
-                        transaction.Complete();
-                        return true;
+                        var stock = await productManager.GetStockByProductSize(productId, cartItem.SizeId);
+                        var amount = await cartItemRepository.GetAmountById(cartItem.Id);
+                        if (stock >= amount)
+                        {
+                            transaction.Complete();
+                            return true;
+                        }
                     }
                 }
+                return false;
             }
-            return false;
         }
-    }
 
-    public async Task<bool> TryRemoveCartItem(int cartItemId, string sessionId)
-    {
-        using (var transaction = new TransactionScope(
-                    TransactionScopeOption.Required,
-                    new TransactionOptions() { IsolationLevel = IsolationLevel.RepeatableRead },
-                    TransactionScopeAsyncFlowOption.Enabled))
+        public async Task<bool> TryRemoveCartItem(int cartItemId, string userId)
         {
-            var cart = await cartRepository.GetCartBySessionIdOrNull(sessionId);
-            if (cart != null)
+            using (var transaction = new TransactionScope(
+                        TransactionScopeOption.Required,
+                        new TransactionOptions() { IsolationLevel = IsolationLevel.RepeatableRead },
+                        TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (await cartItemRepository.RemoveCartItem(cartItemId, cart.Id))
+                var cart = await cartRepository.GetCartByUserIdOrNull(userId);
+                if (cart != null)
                 {
-                    var cartItem = await cartItemRepository.GetByIdOrNull(cartItemId);
-                    if (cartItem == null)
+                    if (await cartItemRepository.RemoveCartItem(cartItemId, cart.Id))
                     {
-                        transaction.Complete();
-                        return true;
+                        var cartItem = await cartItemRepository.GetByIdOrNull(cartItemId);
+                        if (cartItem == null)
+                        {
+                            transaction.Complete();
+                            return true;
+                        }
                     }
                 }
+                return false;
             }
-            return false;
         }
-    }*/
+    }
 }

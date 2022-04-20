@@ -10,16 +10,6 @@
 @inject PrivateClient client
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-
-@if (returnValue == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <p><em>@returnValue</em></p>
-}
-
 @code {
     [Parameter]
     [SupplyParameterFromQuery]
@@ -33,8 +23,6 @@ else
     [SupplyParameterFromQuery]
     public int SizeId { get; set; }
 
-    private string? returnValue;
-
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -42,7 +30,7 @@ else
         var userId = user.FindFirst(c => c.Type == "sub")?.Value;
         try
         {
-            returnValue = await client.AddProductToCart(ProductId, Amount, SizeId, userId);
+            await client.AddProductToCart(ProductId, Amount, SizeId, userId);
         }
         catch (AccessTokenNotAvailableException exception)
         {

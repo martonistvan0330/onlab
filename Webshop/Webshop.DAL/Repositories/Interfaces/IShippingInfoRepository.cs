@@ -4,6 +4,6 @@ namespace Webshop.DAL.Repositories.Interfaces
 {
     public interface IShippingInfoRepository
     {
-        Task<(bool, int)> AddShippingInfo(ShippingInfo shippingInfo, int shippingAddressInfoId, int shippingMethodId);
+        Task<(bool, int)> AddShippingInfo(ShippingInfo shippingInfo, int shippingAddressInfoId);
     }
 }

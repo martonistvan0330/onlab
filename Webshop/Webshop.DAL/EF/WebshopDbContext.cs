@@ -123,10 +123,6 @@ namespace Webshop.DAL.EF
                 entity.Property(e => e.Name).HasMaxLength(50);
                 entity.Property(e => e.MainCustomer).HasColumnType("bit");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Customers)
-                    .HasForeignKey(d => d.UserId);
-
                 entity.HasOne(d => d.ShippingInfo)
                     .WithMany(p => p.Customers)
                     .HasForeignKey(d => d.ShippingInfoId);

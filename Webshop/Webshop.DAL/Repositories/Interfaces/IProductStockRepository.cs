@@ -7,5 +7,6 @@ namespace Webshop.DAL.Repositories.Interfaces
         Task<IReadOnlyCollection<string>> GetSizesByProductId(int productId);
         Task<IReadOnlyCollection<ProductStock>> GetStocksByProductId(int productId);
         Task<int?> GetStockByProductSizeOrNull(int productId, int sizeId);
+        Task<bool> UpdateStock(int productId, int sizeId, int amount);
     }
 }

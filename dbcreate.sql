@@ -173,7 +173,7 @@
 	create table [Customer]
 	(
 		ID int identity primary key,
-		UserID int references [User](ID),
+		UserID nvarchar(450),
 		Name nvarchar(50),
 		ShippingInfoID int references ShippingInfo(ID),
 		PaymentInfoID int references PaymentInfo(ID),

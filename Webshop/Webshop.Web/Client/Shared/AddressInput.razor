@@ -1,0 +1,86 @@
+﻿@using Webshop.Web.Shared.Models
+
+
+<div class="mb-3 row">
+	<label for="firstname" class="col-sm-2 col-form-label">First Name: </label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="firstname" @bind="firstName">
+	</div>
+</div>
+<div class="mb-3 row">
+	<label for="lastname" class="col-sm-2 col-form-label">Last Name: </label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="lastname" @bind="lastName">
+	</div>
+</div>
+<div class="mb-3 row">
+	<label for="country" class="col-sm-2 col-form-label">Country: </label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="country" @bind="country">
+	</div>
+</div>
+<div class="mb-3 row">
+	<label for="region" class="col-sm-2 col-form-label">Region: </label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="region" @bind="region">
+	</div>
+</div>
+<div class="mb-3 row">
+	<label for="zipcode" class="col-sm-2 col-form-label">ZipCode: </label>
+	<div class="col-sm-10">
+		<input type="number" class="form-control" id="zipcode" @bind="zipCode">
+	</div>
+</div>
+<div class="mb-3 row">
+	<label for="city" class="col-sm-2 col-form-label">City: </label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="city" @bind="city">
+	</div>
+</div>
+<div class="mb-3 row">
+	<label for="street" class="col-sm-2 col-form-label">Street: </label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="street" @bind="street">
+	</div>
+</div>
+<div class="mb-3 row">
+	<label for="phonenumber" class="col-sm-2 col-form-label">Phone Number: </label>
+	<div class="col-sm-10">
+		<input type="number" class="form-control" id="phonenumber" @bind="phoneNumber">
+	</div>
+</div>
+@code {
+	private string firstName;
+	private string lastName;
+	private string country;
+	private string region;
+	private string zipCode;
+	private string city;
+	private string street;
+	private string phoneNumber;
+
+	public AddressInfo? GetAddressInfo()
+	{
+		if (true)
+		{
+			return new AddressInfo()
+			{
+				FirstName = firstName,
+				LastName = lastName,
+				Address = new Address()
+				{
+					Country = country,
+					Region = region,
+					ZipCode = zipCode,
+					City = city,
+					Street = street,
+				},
+				PhoneNumber = phoneNumber,
+			};
+		}
+		else
+		{
+			return null;
+		}
+	}
+}

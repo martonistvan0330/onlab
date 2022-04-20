@@ -11,16 +11,12 @@ namespace Webshop.DAL.Repositories
         public PaymentInfoRepository(WebshopDbContext dbContext)
             => this.dbContext = dbContext;
 
-        public async Task<(bool, int)> AddPaymentInfo(
-            Models.PaymentInfo paymentInfo,
-            int billingAddressInfoId,
-            int paymentMethodId
-        )
+        public async Task<(bool, int)> AddPaymentInfo(Models.PaymentInfo paymentInfo, int billingAddressInfoId)
         {
             var dbPaymentInfo = new PaymentInfo()
             {
                 BillingAddressInfoId = billingAddressInfoId,
-                PaymentMethodId = paymentMethodId,
+                PaymentMethodId = paymentInfo.PaymentMethodId,
             };
             if (await dbContext.PaymentInfo.ExistsByPaymentInfo(dbPaymentInfo))
             {
