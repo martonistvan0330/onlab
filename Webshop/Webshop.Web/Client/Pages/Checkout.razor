@@ -1,0 +1,146 @@
+﻿@page "/checkout"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+
+@attribute [Authorize]
+
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
+
+<h3>Place Your Order</h3>
+
+<div class="container">
+	<h4>Shipping</h4>
+	<div class="btn-group" role="group" aria-label="button group2">
+		<input type="radio" class="btn-check" name="options-outlined" id="delivery" autocomplete="off" checked>
+		<label class="btn btn-outline-primary" for="delivery">Delivery</label>
+
+		<input type="radio" class="btn-check" name="options-outlined" id="store-pickup" autocomplete="off">
+		<label class="btn btn-outline-primary" for="store-pickup">Store pickup</label>
+
+		<input type="radio" class="btn-check" name="options-outlined" id="foxpost" autocomplete="off">
+		<label class="btn btn-outline-primary" for="foxpost">FoxPost</label>
+	</div>
+	@if (delivery)
+	{
+		<AddressInput @ref="shippingAddress"></AddressInput>
+	}
+	@if (pickup)
+	{
+		<h5>Pickup</h5>
+	}
+	@if (foxpost)
+	{
+		<h5>FoxPost</h5>
+	}
+</div>
+
+<div class="container">
+	<h4>Payment Method</h4>
+	<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+		<input type="radio" class="btn-check" name="btnradio" id="cash" autocomplete="off" checked>
+		<label class="btn btn-outline-primary" for="cash">Cash</label>
+
+		<input type="radio" class="btn-check" name="btnradio" id="paypal" autocomplete="off">
+		<label class="btn btn-outline-primary" for="paypal">Paypal</label>
+
+		<input type="radio" class="btn-check" name="btnradio" id="after-delivery" autocomplete="off">
+		<label class="btn btn-outline-primary" for="after-delivery">Pay when delivered</label>
+	</div>
+</div>
+
+<div class="container">
+	<h4>Billing Address</h4>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" @bind="sameAsShipping" id="flexCheckDefault">
+		<label class="form-check-label" for="flexCheckDefault">
+			Same as Shipping Address
+		</label>
+	</div>
+
+@if (!sameAsShipping)
+{
+	<AddressInput @ref="billingAddress"></AddressInput>
+}
+</div>
+
+<button class="btn btn-primary btn-lg" @onclick="PlaceOrder">Place Order</button>
+
+@code {
+	private string userId;
+
+	AddressInput shippingAddress;
+
+	AddressInput billingAddress;
+
+	private int customerId;
+	private int orderId;
+
+	private bool delivery;
+	private bool pickup;
+	private bool foxpost;
+
+	private bool cash;
+	private bool paypal;
+	private bool afterDelivery;
+
+	private bool sameAsShipping;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == "sub")?.Value;
+		delivery = true;
+		cash = true;
+		sameAsShipping = true;
+	}
+
+	private async Task PlaceOrder()
+	{
+		customerId = await SaveCustomer();
+		if (customerId > 0)
+		{
+			orderId = await client.CreateOrder(userId, customerId);
+			NavManager.NavigateTo("/order");
+		}
+	}
+
+	private async Task<int> SaveCustomer()
+	{
+		var shippingAddressInfo = shippingAddress.GetAddressInfo();
+		var billingAddressInfo = shippingAddress.GetAddressInfo();
+		if (!sameAsShipping)
+		{
+			billingAddressInfo = billingAddress.GetAddressInfo();
+		}
+		if (shippingAddressInfo != null && billingAddressInfo != null)
+		{
+			var newCustomer = new NewCustomer()
+			{
+				Name = shippingAddressInfo.FirstName + " " + shippingAddressInfo.LastName,
+				ShippingInfo = new ShippingInfo()
+				{
+					ShippingMethodId = 1,
+					ShippingMethodName = "Shipping",
+					ShippingAddressInfo = shippingAddressInfo,
+				},
+				PaymentInfo = new PaymentInfo()
+				{
+					PaymentMethodId = 1,
+					PaymentMethodName = "Cash",
+					BillingAddressInfo = billingAddressInfo,
+				},
+			};
+			return await client.AddCustomer(newCustomer, userId);
+		}
+		else
+		{
+			return -1;
+		}
+	}
+}

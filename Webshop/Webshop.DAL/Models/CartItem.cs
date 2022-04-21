@@ -2,15 +2,23 @@
 {
     public class CartItem
     {
-        public readonly Product Product;
-        public readonly string Size;
+        public readonly int Id;
+        public readonly int ProductId;
+        public readonly string ProductName;
+        public readonly int SizeId;
+        public readonly string SizeName;
         public readonly int Amount;
+        public readonly double Price;
 
-        public CartItem(Product product, string size, int amount)
+        public CartItem(int id, int productId, string productName, int sizeId, string sizeName, int amount, double price)
         {
-            Product = product;
-            Size = size;
+            Id = id;
+            ProductId = productId;
+            ProductName = productName;
+            SizeId = sizeId;
+            SizeName = sizeName;
             Amount = amount;
+            Price = price;
         }
     }
 }

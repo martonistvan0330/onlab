@@ -1,0 +1,202 @@
+﻿@page "/cart"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+
+@attribute [Authorize]
+
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Your Cart</h3>
+
+@if (cartItems == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Size</th>
+				<th>Amount</th>
+				<th>Price</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var cartItem in cartItems)
+			{
+				<tr>
+					<td>@cartItem.ProductName</td>
+					<td>
+						<select class="form-select" aria-label="size select" @onchange="(args) => SizeChanged(args, cartItem)">
+							@if (cartItem.SizeId == 1)
+							{
+								<option selected value="1">XS</option>
+							}
+							else
+							{
+								<option value="1">XS</option>
+							}
+							@if (cartItem.SizeId == 2)
+							{
+								<option selected value="2">S</option>
+							}
+							else
+							{
+								<option value="2">S</option>
+							}
+							@if (cartItem.SizeId == 3)
+							{
+								<option selected value="3">M</option>
+							}
+							else
+							{
+								<option value="3">M</option>
+							}
+							@if (cartItem.SizeId == 4)
+							{
+								<option selected value="4">L</option>
+							}
+							else
+							{
+								<option value="4">L</option>
+							}
+							@if (cartItem.SizeId == 5)
+							{
+								<option selected value="5">XL</option>
+							}
+							else
+							{
+								<option value="5">XL</option>
+							}
+							@if (cartItem.SizeId == 6)
+							{
+								<option selected value="6">XXL</option>
+							}
+							else
+							{
+								<option value="6">XXL</option>
+							}
+						</select>
+					</td>
+					<td>
+						<button type="button" class="btn btn-danger btn-sm" @onclick="(args) => AmountChanged(args, cartItem, -1)">-</button>
+						@cartItem.Amount
+						<button type="button" class="btn btn-success btn-sm" @onclick="(args) => AmountChanged(args, cartItem, 1)">+</button>
+					</td>
+					<td>@cartItem.Price</td>
+					<td>
+						<button type="button" class="btn btn-danger btn-sm" @onclick="(args) => DeleteCartItem(args, cartItem)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+	<h4>Total: @total</h4>
+
+	<NavLink class="btn btn-primary btn-lg" href="checkout">Proceed To Checkout</NavLink>
+}
+
+@code {
+	private CartItem[]? cartItems;
+
+	private string userId;
+
+	private double total;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == "sub")?.Value;
+		try
+		{
+			cartItems = await client.GetCartItems(userId);
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+		CalculateTotal();
+	}
+
+	private async Task SizeChanged(ChangeEventArgs e, CartItem cartItem)
+	{
+		var previousValue = cartItem.SizeId;
+		cartItem.SizeId = int.Parse(e.Value.ToString());
+		try
+		{
+			var success = await client.UpdateCartItem(cartItem, userId);
+			if (!success)
+			{
+				cartItem.SizeId = previousValue;
+			}
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	private async Task AmountChanged(MouseEventArgs e, CartItem cartItem, int amountChange)
+	{
+		var unitPrice = cartItem.Price / cartItem.Amount;
+		var previousValue = cartItem.Amount;
+		cartItem.Amount += amountChange;
+		if (cartItem.Amount <= 0)
+		{
+			await DeleteCartItem(null, cartItem);
+		}
+		else
+		{
+			try
+			{
+				var success = await client.UpdateCartItem(cartItem, userId);
+				if (!success)
+				{
+					cartItem.Amount = previousValue;
+				}
+				cartItem.Price = cartItem.Amount * unitPrice;
+				CalculateTotal();
+			}
+			catch (AccessTokenNotAvailableException exception)
+			{
+				exception.Redirect();
+			}
+		}
+	}
+
+	private async Task DeleteCartItem(MouseEventArgs e, CartItem cartItem)
+	{
+		try
+		{
+			var success = await client.DeleteCartItem(cartItem.Id, userId);
+			if (success)
+			{
+				cartItems = cartItems.Where(ci => ci.Id != cartItem.Id).ToArray();
+				CalculateTotal();
+			}
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	private void CalculateTotal()
+	{
+		double newTotal = 0;
+		foreach (var cartItem in cartItems)
+		{
+			newTotal += cartItem.Price;
+		}
+		total = newTotal;
+	}
+}

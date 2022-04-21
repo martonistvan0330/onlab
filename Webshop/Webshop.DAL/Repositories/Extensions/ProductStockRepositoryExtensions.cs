@@ -10,9 +10,9 @@ namespace Webshop.DAL.Repositories.Extensions
             return productStocks.Where(ps => ps.Stock > minStock);
         }
 
-        public static IQueryable<ProductStock> FilterBySize(this IQueryable<ProductStock> productStocks, string size)
+        public static IQueryable<ProductStock> FilterBySize(this IQueryable<ProductStock> productStocks, int sizeId)
         {
-            return productStocks.Where(ps => ps.Size.Name.Equals(size));
+            return productStocks.Where(ps => ps.SizeId == sizeId);
         }
 
         public static IQueryable<ProductStock> FindProductStockByProductId(this IQueryable<ProductStock> productStocks, int productId)
@@ -38,6 +38,12 @@ namespace Webshop.DAL.Repositories.Extensions
             return await productstocks
                             .Select(ps => ps.GetStock())
                             .ToArrayAsync();
+        }
+
+        public async static Task<ProductStock?> GetProductStockOrNull(this IQueryable<ProductStock> productstocks)
+        {
+            return await productstocks
+                            .SingleOrDefaultAsync();
         }
 
         public async static Task<int?> GetStock(this IQueryable<ProductStock> productstocks)

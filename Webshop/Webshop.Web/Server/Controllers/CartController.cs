@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Webshop.BL;
 using Webshop.DAL.Models;
+using Webshop.Web.Server.Models;
 
 namespace Webshop.Web.Server.Controllers
 {
@@ -17,39 +19,24 @@ namespace Webshop.Web.Server.Controllers
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<CartItemWithId>>> GetCartItems([FromQuery] string sessionId)
+        public async Task<IEnumerable<CartItem>> GetCartItems([FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
-            {
-                var cartItems = await cartManager.ListCartItems(sessionId);
-                return Ok(cartItems);
-            }
-            else
-            {
-                return NotFound("invalid sessionID");
-            }
+            return await cartManager.ListCartItems(userId);
         }
 
-        [HttpPut("{cartItemId}")]
+        [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> UpdateCartItem([FromRoute]int cartItemId, [FromQuery] string sessionId, [FromQuery] int amount)
+        public async Task<ActionResult> UpdateCartItem([FromBody] UpdateCartItem cartItem, [FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
+            if (await cartManager.TryUpdateCartItem(cartItem, userId))
             {
-                if (await cartManager.TryUpdateCartItem(cartItemId, sessionId, amount))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Conflict();
-                }
+                return Ok();
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return Conflict();
             }
         }
 
@@ -57,22 +44,15 @@ namespace Webshop.Web.Server.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> AddCartItem([FromBody] CartItem cartItem, [FromQuery] string sessionId)
+        public async Task<ActionResult> AddCartItem([FromBody] NewCartItem cartItem, [FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
+            if (await cartManager.TryAddCartItem(cartItem, userId))
             {
-                if (await cartManager.TryAddCartItem(cartItem, sessionId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Conflict();
-                }
+                return Ok();
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return Conflict();
             }
         }
 
@@ -80,22 +60,15 @@ namespace Webshop.Web.Server.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> RemoveCartItem([FromRoute] int cartItemId, [FromQuery] string sessionId)
+        public async Task<ActionResult> RemoveCartItem([FromRoute] int cartItemId, [FromQuery] string userId)
         {
-            if (await cartManager.ValidateSessionId(sessionId))
+            if (await cartManager.TryRemoveCartItem(cartItemId, userId))
             {
-                if (await cartManager.TryRemoveCartItem(cartItemId, sessionId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Conflict();
-                }
+                return Ok();
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return Conflict();
             }
         }
     }

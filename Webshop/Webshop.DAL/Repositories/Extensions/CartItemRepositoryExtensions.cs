@@ -22,25 +22,22 @@ namespace Webshop.DAL.Repositories.Extensions
                     .Include(ci => ci.Size);
         }
 
-        public static async Task<IReadOnlyCollection<Models.CartItemWithId>> GetCartItemsWithId(this IQueryable<CartItem> cartItems)
+        public static async Task<IReadOnlyCollection<Models.CartItem>> GetCartItems(this IQueryable<CartItem> cartItems)
         {
-            return await cartItems.Select(dbRec => dbRec.GetCartItemWithId())
+            return await cartItems.Select(dbRec => dbRec.GetCartItem())
                                   .ToArrayAsync();
         }
 
-        public static Models.CartItemWithId GetCartItemWithId(this CartItem dbRecord)
+        public static Models.CartItem GetCartItem(this CartItem dbRecord)
         {
-            return new Models.CartItemWithId(
+            return new Models.CartItem(
                 dbRecord.Id,
-                new Models.Product(
-                    dbRecord.ProductId,
-                    dbRecord.Product.Name,
-                    dbRecord.Product.Price,
-                    "asd"
-                    ),
+                dbRecord.ProductId,
+                dbRecord.Product.Name,
+                dbRecord.Size.Id,
                 dbRecord.Size.Name,
                 dbRecord.Amount,
-                dbRecord.Price
+                dbRecord.Amount * dbRecord.Product.Price
                 );
         }
 

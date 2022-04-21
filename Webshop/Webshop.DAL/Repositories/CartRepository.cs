@@ -13,23 +13,22 @@ namespace Webshop.DAL.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task<Cart?> GetCartBySessionIdOrNull(string sessionId)
+        public async Task<Models.Cart?> GetCartByUserIdOrNull(string userId)
         {
             return await dbContext.Cart
-                            .GetCartBySessionIdOrNull(sessionId);
+                            .GetCartByUserIdOrNull(userId);
         }
 
-        public async Task<Cart> CreateNewCart(int userId, string sessionId)
+        public async Task<Models.Cart> CreateNewCart(string userId)
         {
             var cart = new Cart()
             {
                 UserId = userId,
-                SessionId = sessionId,
             };
 
             dbContext.Cart.Add(cart);
             await dbContext.SaveChangesAsync();
-            return cart;
+            return new Models.Cart(cart.Id, cart.UserId);
         }
     }
 }

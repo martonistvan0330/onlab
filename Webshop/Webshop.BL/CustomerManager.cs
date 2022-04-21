@@ -42,25 +42,23 @@ namespace Webshop.BL
             return await sessionManager.ValidateSessionId(sessionId);
         }
 
-        public async Task<bool> ExistsByName(string customerName, string sessionId)
+        public async Task<bool> ExistsByName(string customerName, string userId)
         {
-            var userId = await sessionManager.GetUserIdBySessionIdOrNull(sessionId);
-            return await customerRepository.ExistsByName(customerName, userId.Value);
+            return await customerRepository.ExistsByName(customerName, userId);
         }
 
-        public async Task<bool> ExistsById(int customerId, string sessionId)
+        public async Task<bool> ExistsById(string userId, int customerId)
         {
-            var userId = await sessionManager.GetUserIdBySessionIdOrNull(sessionId);
-            return await customerRepository.ExistsById(customerId, userId.Value);
+            return await customerRepository.ExistsById(customerId, userId);
         }
 
-        public async Task<IReadOnlyCollection<Customer>> ListCustomers(string sessionId)
+        /*public async Task<IReadOnlyCollection<Customer>> ListCustomers(string sessionId)
         {
             var userId = await sessionManager.GetUserIdBySessionIdOrNull(sessionId);
             return await customerRepository.ListCustomers(userId.Value);
-        }
+        }*/
 
-        public async Task<bool> TryAddCustomerWithAll(Customer customer)
+        public async Task<(bool, int)> TryAddCustomerWithAll(Customer customer, string userId)
         {
             using (var transaction = new TransactionScope(
                         TransactionScopeOption.Required,
@@ -86,20 +84,21 @@ namespace Webshop.BL
                             = await TryAddPaymentInfo(customer.PaymentInfo, billingAddressInfoId);
                         if (shippingInfoSuccess && paymentInfoSuccess)
                         {
-                            if (await TryAddCustomer(customer, shippingInfoId, paymentInfoId))
+                            var (success, customerId) = await TryAddCustomer(customer, shippingInfoId, paymentInfoId, userId);
+                            if (success)
                             {
                                 transaction.Complete();
-                                return true;
+                                return (true, customerId);
                             }
                         }
                     }
                 }
-                return false;
+                return (false, -1);
             }
 
         }
 
-        public async Task<bool> TryUpdateCustomerWithAll(Customer customer, string? oldName)
+        /*public async Task<bool> TryUpdateCustomerWithAll(Customer customer, string? oldName)
         {
             using (var transaction = new TransactionScope(
                         TransactionScopeOption.Required,
@@ -136,7 +135,7 @@ namespace Webshop.BL
                 return false;
             }
 
-        }
+        }*/
 
         private async Task<(bool, int)> TryAddAddress(Address address)
         {
@@ -150,25 +149,19 @@ namespace Webshop.BL
 
         private async Task<(bool, int)> TryAddShippingInfo(ShippingInfo shippingInfo, int shippingAddressInfoId)
         {
-            var (shippingMethodSuccess, shippingMethodId)
-                = await shippingMethodRepository.GetIdByMethod(shippingInfo.ShippingMethod.Method);
-            if (shippingMethodSuccess)
-            {
-                return await shippingInfoRepository.AddShippingInfo(shippingInfo, shippingAddressInfoId, shippingMethodId);
-            }
-            else
-            {
-                return (false, -1);
-            }
+            return await shippingInfoRepository.AddShippingInfo(shippingInfo, shippingAddressInfoId);
         }
 
         private async Task<(bool, int)> TryAddPaymentInfo(PaymentInfo paymentInfo, int billingAddressInfoId)
         {
-            var (paymentMethodSuccess, paymentMethodId)
-                = await paymentMethodRepository.GetIdByMethod(paymentInfo.PaymentMethod.Method);
-            if (paymentMethodSuccess)
+            return await paymentInfoRepository.AddPaymentInfo(paymentInfo, billingAddressInfoId);
+        }
+
+        private async Task<(bool, int)> TryAddCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string userId)
+        {
+            if (!(await customerRepository.ExistsByName(customer.Name, userId)))
             {
-                return await paymentInfoRepository.AddPaymentInfo(paymentInfo, billingAddressInfoId, paymentMethodId);
+                return await customerRepository.AddCustomer(customer, shippingInfoId, paymentInfoId, userId);
             }
             else
             {
@@ -176,20 +169,7 @@ namespace Webshop.BL
             }
         }
 
-        private async Task<bool> TryAddCustomer(Customer customer, int shippingInfoId, int paymentInfoId)
-        {
-            if (await sessionManager.ValidateSessionId(customer.SessionId))
-            {
-                var userId = await sessionManager.GetUserIdBySessionIdOrNull(customer.SessionId);
-                if (!(await customerRepository.ExistsByName(customer.Name, userId.Value)))
-                {
-                    return await customerRepository.AddCustomer(customer, userId.Value, shippingInfoId, paymentInfoId);
-                }
-            }
-            return false;
-        }
-
-        private async Task<bool> TryUpdateCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string oldName)
+        /*private async Task<bool> TryUpdateCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string oldName)
         {
             if (await sessionManager.ValidateSessionId(customer.SessionId))
             {
@@ -200,6 +180,6 @@ namespace Webshop.BL
                 }
             }
             return false;
-        }
+        }*/
     }
 }

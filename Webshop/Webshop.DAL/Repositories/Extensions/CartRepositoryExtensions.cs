@@ -6,13 +6,13 @@ namespace Webshop.DAL.Repositories.Extensions
     public static class CartRepositoryExtensions
     {
 
-        public static IQueryable<Cart> FindBySessionId(this IQueryable<Cart> carts, string sessionId)
+        public static IQueryable<Cart> FindByUserId(this IQueryable<Cart> carts, string userId)
         {
             return carts
-                    .Where(c => c.SessionId.Equals(sessionId));
+                    .Where(c => c.UserId.Equals(userId));
         }
 
-        public static async Task<bool> ExistsBySession(this IQueryable<Cart> carts, string sessionId)
+        /*public static async Task<bool> ExistsBySession(this IQueryable<Cart> carts, string sessionId)
         {
             var dbCart = await carts
                                 .GetCartBySessionIdOrNull(sessionId);
@@ -24,21 +24,21 @@ namespace Webshop.DAL.Repositories.Extensions
             {
                 return true;
             }
-        }
+        }*/
 
-        public static async Task<Cart?> GetCartBySessionIdOrNull(this IQueryable<Cart> carts, string sessionId)
+        public static async Task<Models.Cart?> GetCartByUserIdOrNull(this IQueryable<Cart> carts, string userId)
         {
             return await carts
-                            .FindBySessionId(sessionId)
+                            .FindByUserId(userId)
                             .GetCartOrNull();
         }
 
-        public static async Task<int> GetIdBySessionId(this IQueryable<Cart> carts, string sessionId)
+        /*public static async Task<int> GetIdBySessionId(this IQueryable<Cart> carts, string sessionId)
         {
             return await carts
                             .FindBySessionId(sessionId)
                             .GetId();
-        }
+        }*/
 
         public static async Task<int> GetId(this IQueryable<Cart> carts)
         {
@@ -47,7 +47,7 @@ namespace Webshop.DAL.Repositories.Extensions
                             .SingleAsync();
         }
 
-        public static async Task<Cart?> GetCartOrNull(this IQueryable<Cart> carts)
-            => await carts.SingleOrDefaultAsync();
+        public static async Task<Models.Cart?> GetCartOrNull(this IQueryable<Cart> carts)
+            => await carts.Select(dbRecord => new Models.Cart(dbRecord.Id, dbRecord.UserId)).SingleOrDefaultAsync();
     }
 }

@@ -11,17 +11,17 @@ namespace Webshop.DAL.Repositories
         public CustomerRepository(WebshopDbContext dbContext)
             => this.dbContext = dbContext;
 
-        public async Task<bool> ExistsByName(string customerName, int userId)
+        public async Task<bool> ExistsByName(string customerName, string userId)
         {
             return await dbContext.Customer.ExistsByName(customerName, userId);
         }
 
-        public async Task<bool> ExistsById(int customerId, int userId)
+        public async Task<bool> ExistsById(int customerId, string userId)
         {
             return await dbContext.Customer.ExistsById(customerId, userId);
         }
 
-        public async Task<IReadOnlyCollection<Models.Customer>> ListCustomers(int userId)
+        /*public async Task<IReadOnlyCollection<Models.Customer>> ListCustomers(int userId)
         {
 
             return await dbContext.Customer
@@ -29,9 +29,9 @@ namespace Webshop.DAL.Repositories
                             .WithPaymentInfo()
                             .FilterByUser(userId)
                             .GetCustomers();
-        }
+        }*/
 
-        public async Task<bool> AddCustomer(Models.Customer customer, int userId, int shippingInfoId, int paymentInfoId)
+        public async Task<(bool, int)> AddCustomer(Models.Customer customer, int shippingInfoId, int paymentInfoId, string userId)
         {
             var dbCustomer = new Customer()
             {
@@ -43,7 +43,7 @@ namespace Webshop.DAL.Repositories
             };
             if (await dbContext.Customer.ExistsByName(customer.Name, userId))
             {
-                return false;
+                return (false, -1);
             }
             else
             {
@@ -51,16 +51,16 @@ namespace Webshop.DAL.Repositories
                 try
                 {
                     await dbContext.SaveChangesAsync();
-                    return true;
+                    return (true, dbCustomer.Id);
                 }
                 catch
                 {
-                    return false;
+                    return (false, -1);
                 }
             }
         }
 
-        public async Task<bool> UpdateCustomer(Models.Customer customer, int userId, int shippingInfoId, int paymentInfoId, string oldName)
+        /*public async Task<bool> UpdateCustomer(Models.Customer customer, int userId, int shippingInfoId, int paymentInfoId, string oldName)
         {
             if (await dbContext.Customer.ExistsByName(oldName, userId))
             {
@@ -93,6 +93,6 @@ namespace Webshop.DAL.Repositories
             {
                 return false;
             }
-        }
+        }*/
     }
 }

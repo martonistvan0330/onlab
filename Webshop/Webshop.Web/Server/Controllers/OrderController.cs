@@ -19,24 +19,17 @@ namespace Webshop.Web.Server.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult> AddCartItem([FromQuery] string sessionId, [FromQuery] int customerId)
+        public async Task<ActionResult<int>> AddCartItem([FromQuery] string userId, [FromQuery] int customerId)
         {
-            if (await orderManager.ValidateSessionId(sessionId))
+            var (success, orderId) = await orderManager.TryCreateOrder(userId, customerId);
+            if (success)
             {
-                if (await orderManager.TryCreateOrder(customerId, sessionId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Conflict();
-                }
+                return Ok(orderId);
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return Conflict(-1);
             }
         }
-
     }
 }

@@ -11,16 +11,12 @@ namespace Webshop.DAL.Repositories
         public ShippingInfoRepository(WebshopDbContext dbContext)
             => this.dbContext = dbContext;
 
-        public async Task<(bool, int)> AddShippingInfo(
-            Models.ShippingInfo shippingInfo,
-            int shippingAddressInfoId,
-            int shippingMethodId
-        )
+        public async Task<(bool, int)> AddShippingInfo(Models.ShippingInfo shippingInfo, int shippingAddressInfoId)
         {
             var dbShippingInfo = new ShippingInfo()
             {
                 ShippingAddressInfoId = shippingAddressInfoId,
-                ShippingMethodId = shippingMethodId,
+                ShippingMethodId = shippingInfo.ShippingMethodId,
             };
             if (await dbContext.ShippingInfo.ExistsByShippingInfo(dbShippingInfo))
             {
@@ -29,6 +25,8 @@ namespace Webshop.DAL.Repositories
             }
             else
             {
+                Console.WriteLine(shippingAddressInfoId);
+                Console.WriteLine(shippingInfo.ShippingMethodId);
                 dbContext.ShippingInfo.Add(dbShippingInfo);
                 try
                 {

@@ -14,10 +14,10 @@ namespace Webshop.DAL.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task<(bool, int)> AddCartItem(Models.CartItem cartItem, int cartId, int productId, int sizeId)
+        public async Task<(bool, int)> AddCartItem(Models.NewCartItem cartItem, int cartId)
         {
             var dbCartItem = await dbContext.CartItem
-                                       .GetCartItemByCartProductSize(cartId, productId, sizeId);
+                                       .GetCartItemByCartProductSize(cartId, cartItem.ProductId, cartItem.SizeId);
             if (dbCartItem != null)
             {
                 dbCartItem.Amount += cartItem.Amount;
@@ -28,10 +28,9 @@ namespace Webshop.DAL.Repositories
                 dbCartItem = new CartItem()
                 {
                     CartId = cartId,
-                    ProductId = productId,
-                    SizeId = sizeId,
+                    ProductId = cartItem.ProductId,
+                    SizeId = cartItem.SizeId,
                     Amount = cartItem.Amount,
-                    Price = cartItem.Product.Price * cartItem.Amount,
                 };
 
                 dbContext.CartItem.Add(dbCartItem);
@@ -48,27 +47,28 @@ namespace Webshop.DAL.Repositories
             }
         }
 
-        public async Task<bool> UpdateCartItem(int cartItemId, int cartId, int amount)
+        public async Task<(bool, int)> UpdateCartItem(Models.UpdateCartItem cartItem, int cartId)
         {
             var dbCartItem = await dbContext.CartItem
-                                       .GetCartItemByIdCart(cartItemId, cartId);
+                                       .GetCartItemByIdCart(cartItem.Id, cartId);
             if (dbCartItem != null)
             {
-                dbCartItem.Amount = amount;
+                dbCartItem.Amount = cartItem.Amount;
+                dbCartItem.SizeId = cartItem.SizeId;
                 dbContext.CartItem.Update(dbCartItem);
                 try
                 {
                     await dbContext.SaveChangesAsync();
-                    return true;
+                    return (true, dbCartItem.ProductId);
                 }
                 catch
                 {
-                    return false;
+                    return (false, -1);
                 }
             }
             else
             {
-                return false;
+                return (false, -1);
             }
         }
 
@@ -113,13 +113,13 @@ namespace Webshop.DAL.Repositories
                                        .SingleOrDefaultAsync();
         }
 
-        public async Task<IReadOnlyCollection<Models.CartItemWithId>> ListCartItems(int cartId)
+        public async Task<IReadOnlyCollection<Models.CartItem>> ListCartItems(int cartId)
         {
             return await dbContext.CartItem
+                            .FilterByCart(cartId)
                             .WithProduct()
                             .WithSize()
-                            .FilterByCart(cartId)
-                            .GetCartItemsWithId();
+                            .GetCartItems();
         }
     }
 }
