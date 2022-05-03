@@ -7,7 +7,7 @@ namespace Webshop.DAL.Repositories.Interfaces
         int GetProductCount();
 
         Task<IReadOnlyCollection<Product>> GetMainPageProducts(List<int> productIds);
-        Task<IReadOnlyCollection<Product>> GetFilteredProducts(List<int> categoryIds, double minPrice, double maxPrice, List<string> sizes, int page);
+        Task<ProductsWithPageCount> GetFilteredProducts(List<int> categoryIds, double minPrice, double maxPrice, List<string> sizes, int page);
         Task<ProductDetails?> GetProductDetailsOrNull(int productId);
         Task<bool> ExistsByName(string productName);
         Task<int?> GetProductIdByName(string productName);

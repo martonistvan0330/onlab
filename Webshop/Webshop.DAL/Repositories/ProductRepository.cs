@@ -8,6 +8,8 @@ namespace Webshop.DAL.Repositories
 {
     public class ProductRepository : IProductRepository
     {
+        public const int PAGES_PER_PRODUCT = 6;
+
         private readonly WebshopDbContext dbContext;
 
         public ProductRepository(WebshopDbContext dbContext)
@@ -25,13 +27,17 @@ namespace Webshop.DAL.Repositories
                             .GetProducts();
         }
 
-        public async Task<IReadOnlyCollection<Models.Product>> GetFilteredProducts(List<int> categoryIds, double minPrice, double maxPrice, List<string> sizes, int page)
+        public async Task<ProductsWithPageCount> GetFilteredProducts(List<int> categoryIds, double minPrice, double maxPrice, List<string> sizes, int page)
         {
-            return await dbContext.Product
+            var query = dbContext.Product
                             .FilterByCategory(categoryIds)
                             .FilterByPrice(minPrice, maxPrice)
-                            .FilterBySize(sizes)
-                            .GetProducts(page);
+                            .FilterBySize(sizes);
+            var pageCount = query.Count();
+            var products = await query.GetProducts(page);
+            return new ProductsWithPageCount(
+                products.ToArray(),
+                (pageCount + PAGES_PER_PRODUCT - 1) / PAGES_PER_PRODUCT);
         }
 
         public async Task<ProductDetails?> GetProductDetailsOrNull(int productID)

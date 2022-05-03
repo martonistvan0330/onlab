@@ -11,24 +11,40 @@ namespace Webshop.Web.Server.Controllers
         private readonly CategoryManager categoryManager;
         public CategoryController(CategoryManager categoryManager) => this.categoryManager = categoryManager;
 
+        [HttpGet("{categoryId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Category>> GetCategory([FromRoute] int categoryId)
+		{
+            var category = await categoryManager.GetCategory(categoryId);
+            if (category != null)
+			{
+                return Ok(category);
+			}
+            else
+			{
+                return NotFound();
+            }
+		}
+
         [HttpGet("main")]
         public async Task<IEnumerable<Category>> GetMainCategories()
             => await categoryManager.ListMainCategories();
 
-        [HttpGet("{parentCategoryId}")]
+        [HttpGet("{parentCategoryId}/subcategories")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Category>>> GetSubcategoriesByParentCategory([FromRoute] int parentCategoryId)
         {
-            var categories = await categoryManager.ListSubcategoriesByParentCategory(parentCategoryId);
-            if (categories.Count <= 0)
-            {
-                return NotFound();
-            }
-            else
-            {
+            try
+			{
+                var categories = await categoryManager.ListSubcategoriesByParentCategory(parentCategoryId);
                 return Ok(categories);
             }
+            catch
+			{
+                return NotFound();
+			}
         }
     }
 }

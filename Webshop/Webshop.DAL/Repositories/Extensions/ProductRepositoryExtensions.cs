@@ -7,6 +7,10 @@ namespace Webshop.DAL.Repositories.Extensions
     {
         public static IQueryable<Product> FilterByCategory(this IQueryable<Product> products, List<int> categoryIds)
         {
+            if (categoryIds.Count <= 0)
+			{
+                return products;
+			}
             return products
                     .Where(p => categoryIds.Contains(p.Category.Id));
         }
@@ -58,7 +62,7 @@ namespace Webshop.DAL.Repositories.Extensions
                             .ToArrayAsync();
         }
 
-        public static async Task<IReadOnlyCollection<Models.Product>> GetProducts(this IQueryable<Product> products, int pageNum, int productsPerPage = 6)
+        public static async Task<IReadOnlyCollection<Models.Product>> GetProducts(this IQueryable<Product> products, int pageNum, int productsPerPage = ProductRepository.PAGES_PER_PRODUCT)
         {
             return await products
                             .Skip((pageNum - 1) * productsPerPage)

@@ -26,7 +26,7 @@ namespace Webshop.BL
 			var productIds = new List<int>();
 			while (productIds.Count < 6)
 			{
-				int id = random.Next(1, productCount+1);
+				int id = random.Next(1, productCount + 1);
 				if (!productIds.Contains(id))
 				{
 					productIds.Add(id);
@@ -36,27 +36,15 @@ namespace Webshop.BL
 			return await productRepository.GetMainPageProducts(productIds);
 		}
 
-		public async Task<IReadOnlyCollection<Product>> GetFilteredProducts(int categoryId, double minPrice, double maxPrice, string? sizes, int page)
+		public async Task<ProductsWithPageCount> GetFilteredProducts(int categoryId, double minPrice, double maxPrice, string? sizes, int page)
 		{
 			var categoryIds = await categoryRepository.GetCategoryIdsByParentCategory(categoryId);
-
-			if (categoryIds.Count == 0)
+			List<string> sizeList = Array.Empty<string>().ToList();
+			if (!string.IsNullOrEmpty(sizes))
 			{
-				return Array.Empty<Product>();
+				sizeList = sizes.Split(',').ToList();
 			}
-			else
-			{
-				List<string> sizeList;
-				if (!string.IsNullOrEmpty(sizes))
-				{
-					sizeList = sizes.Split(',').ToList();
-				}
-				else
-				{
-					sizeList = Array.Empty<string>().ToList();
-				}
-				return await productRepository.GetFilteredProducts(categoryIds.ToList(), minPrice, maxPrice, sizeList, page);
-			}
+			return await productRepository.GetFilteredProducts(categoryIds.ToList(), minPrice, maxPrice, sizeList, page);
 		}
 
 		public async Task<ProductDetails?> GetProductDetailsOrNull(int productId)
