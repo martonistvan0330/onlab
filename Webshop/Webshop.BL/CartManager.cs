@@ -69,6 +69,10 @@ namespace Webshop.BL
                         transaction.Complete();
                         return true;
                     }
+                    else
+					{
+                        throw new Exception("not enough items in stock");
+					}
                 }
             }
             return false;

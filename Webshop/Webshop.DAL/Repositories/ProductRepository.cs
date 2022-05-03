@@ -34,10 +34,11 @@ namespace Webshop.DAL.Repositories
                             .GetProducts(page);
         }
 
-        public async Task<ProductDetails?> GetProductDetailsOrNull(string productName)
+        public async Task<ProductDetails?> GetProductDetailsOrNull(int productID)
         {
             return await dbContext.Product
-                            .FindByName(productName)
+                            .WithImages()
+                            .FindById(productID)
                             .GetProductDetailsOrNull();
         }
 

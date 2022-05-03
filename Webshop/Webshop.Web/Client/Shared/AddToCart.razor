@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Clients
+
+@inject NavigationManager NavManager
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<button class="btn btn-primary" @onclick="(args) => AddProductToCart(args)">Add To Cart</button>
+
+
+@code {
+	[Parameter]
+	[EditorRequired]
+	public int ProductId { get; set; }
+
+	[Parameter]
+	public int Amount { get; set; } = 1;
+
+	[Parameter]
+	public int SizeId { get; set; } = 3;
+
+	private System.Security.Claims.Claim claim;
+
+	private async Task AddProductToCart(MouseEventArgs e)
+	{
+		if (Amount > 0)
+		{
+			var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+			if (!user.Identity.IsAuthenticated)
+			{
+				NavManager.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(NavManager.Uri)}");
+			}
+			else
+			{
+				var userId = user.FindFirst(c => c.Type == "sub")?.Value;
+				try
+				{
+					await client.AddProductToCart(ProductId, Amount, SizeId, userId);
+				}
+				catch (AccessTokenNotAvailableException exception)
+				{
+					exception.Redirect();
+				}
+				Console.WriteLine("POGGERS");
+				NavManager.NavigateTo("/cart");
+			}
+		}
+		else
+		{
+				
+		}
+	}
+}

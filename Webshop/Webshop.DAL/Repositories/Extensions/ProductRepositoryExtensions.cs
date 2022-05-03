@@ -40,6 +40,11 @@ namespace Webshop.DAL.Repositories.Extensions
             return products.Where(p => p.Name.Equals(productName));
         }
 
+        public static IQueryable<Product> FindById(this IQueryable<Product> products, int productId)
+        {
+            return products.Where(p => p.Id == productId);
+        }
+
         public static IQueryable<Product> FindByIdList(this IQueryable<Product> products, List<int> productIds)
         {
             return products.Where(p => productIds.Contains(p.Id));
@@ -113,6 +118,6 @@ namespace Webshop.DAL.Repositories.Extensions
             => new Models.Product(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource);
 
         public static Models.ProductDetails GetProductDetails(this Product dbRecord)
-            => new Models.ProductDetails(dbRecord.Name, dbRecord.Price, dbRecord.Vat.Percentage);
+            => new Models.ProductDetails(dbRecord.Name, dbRecord.Price, dbRecord.Vat.Percentage, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource);
     }
 }

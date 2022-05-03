@@ -1,0 +1,69 @@
+﻿@page "/product/{productId:int}"
+
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+
+@inject PublicClient client
+@inject NavigationManager NavManager
+
+@if (product == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+			<thead>
+				<tr>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>VAT</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><img class="img-thumbnail" src="@product.ImageSource" width="500"></td>
+					<td>@product.Name</td>
+					<td>@product.Price</td>
+					<td>@product.VatPercentage</td>
+				</tr>
+			</tbody>
+	</table>
+
+	<select class="form-select" aria-label="size select" @onchange="SizeChanged">
+		<option value="1">XS</option>
+		<option value="2">S</option>
+		<option selected value="3">M</option>
+		<option value="4">L</option>
+		<option value="5">XL</option>
+		<option value="6">XXL</option>
+	</select>
+
+	<input type="number" required min="1" max="10" @bind="amount"></input>
+
+	<AddToCart ProductId=@ProductId Amount=@amount SizeId=@sizeId></AddToCart>
+}
+
+@code {
+	[Parameter]
+	public int ProductId { get; set; }
+
+	private ProductDetails product;
+
+	private int sizeId;
+
+	private int amount;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		sizeId = 3;
+		amount = 1;
+		product = await client.GetProduct(ProductId);
+	}
+
+	private async Task SizeChanged(ChangeEventArgs e)
+	{
+		sizeId = int.Parse(e.Value.ToString());
+	}
+}

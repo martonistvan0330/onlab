@@ -63,10 +63,40 @@ namespace Webshop.Web.Client.Clients
             return int.Parse(await result.Content.ReadAsStringAsync());
         }
 
-        public async Task<int> CreateOrder(string userId, int customerId)
+        public async Task<Order[]?> GetOrders(string userId)
+        {
+            return await Client.GetFromJsonAsync<Order[]>($"api/order?userid={userId}");
+        }
+
+        public async Task<(bool, int)> CreateOrder(string userId, int customerId)
         {
             var result = await Client.PostAsync($"api/order?userid={userId}&customerid={customerId}", null);
-            return int.Parse(await result.Content.ReadAsStringAsync());
+            if (result.IsSuccessStatusCode)
+            {
+                return (true, int.Parse(await result.Content.ReadAsStringAsync()));
+            }
+            else 
+            {
+                return (false, -1);
+            }
+        }
+
+        public async Task<bool> CancelOrder(int orderId, string userId)
+        {
+            var result = await Client.PatchAsync($"api/order/{orderId}/cancel?userid={userId}", null);
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<OrderDetails?> GetOrderDetails(int orderId, string userId)
+        {
+            return await Client.GetFromJsonAsync<OrderDetails>($"api/order/{orderId}?userid={userId}");
         }
     }
 }

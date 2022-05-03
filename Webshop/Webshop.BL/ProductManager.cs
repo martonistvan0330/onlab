@@ -59,9 +59,9 @@ namespace Webshop.BL
 			}
 		}
 
-		public async Task<ProductDetails?> GetProductDetailsOrNull(string productName)
+		public async Task<ProductDetails?> GetProductDetailsOrNull(int productId)
 		{
-			return await productRepository.GetProductDetailsOrNull(productName);
+			return await productRepository.GetProductDetailsOrNull(productId);
 		}
 
 		public async Task<IReadOnlyCollection<string>> GetSizesByName(string productName)
@@ -137,6 +137,15 @@ namespace Webshop.BL
 				}
 				return false;
 			}
+		}
+
+		public async Task<bool> AddStock(IReadOnlyCollection<ProductStockWithId> productStocks)
+		{
+			if (await productStockRepository.AddStock(productStocks))
+			{
+				return true;
+			}
+			return false;
 		}
 	}
 }

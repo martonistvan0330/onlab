@@ -70,23 +70,28 @@ namespace Webshop.BL
                 var (billingAddressSuccess, billingAddressId)
                     = await TryAddAddress(customer.PaymentInfo.BillingAddressInfo.Address);
 
+                Console.WriteLine("POGGERS0");
                 if (shippingAddressSuccess && billingAddressSuccess)
                 {
+                    Console.WriteLine("POGGERS1");
                     var (shippingAddressInfoSuccess, shippingAddressInfoId)
                         = await TryAddAddressInfo(customer.ShippingInfo.ShippingAddressInfo, shippingAddressId);
                     var (billingAddressInfoSuccess, billingAddressInfoId)
                         = await TryAddAddressInfo(customer.PaymentInfo.BillingAddressInfo, billingAddressId);
                     if (shippingAddressInfoSuccess && billingAddressInfoSuccess)
                     {
+                        Console.WriteLine("POGGERS2");
                         var (shippingInfoSuccess, shippingInfoId)
                             = await TryAddShippingInfo(customer.ShippingInfo, shippingAddressInfoId);
                         var (paymentInfoSuccess, paymentInfoId)
                             = await TryAddPaymentInfo(customer.PaymentInfo, billingAddressInfoId);
                         if (shippingInfoSuccess && paymentInfoSuccess)
                         {
+                            Console.WriteLine("POGGERS3");
                             var (success, customerId) = await TryAddCustomer(customer, shippingInfoId, paymentInfoId, userId);
                             if (success)
                             {
+                                Console.WriteLine("POGGERS4");
                                 transaction.Complete();
                                 return (true, customerId);
                             }
@@ -159,14 +164,7 @@ namespace Webshop.BL
 
         private async Task<(bool, int)> TryAddCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string userId)
         {
-            if (!(await customerRepository.ExistsByName(customer.Name, userId)))
-            {
-                return await customerRepository.AddCustomer(customer, shippingInfoId, paymentInfoId, userId);
-            }
-            else
-            {
-                return (false, -1);
-            }
+            return await customerRepository.AddCustomer(customer, shippingInfoId, paymentInfoId, userId);
         }
 
         /*private async Task<bool> TryUpdateCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string oldName)

@@ -66,26 +66,17 @@ namespace Webshop.Web.Server.Controllers
 
         [HttpPost]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
         [ProducesResponseType(409)]
         public async Task<ActionResult<int>> AddCustomer([FromBody] Customer customer, [FromQuery] string userId)
         {
-            if (await customerManager.ExistsByName(customer.Name, userId))
+            var (success, customerId) = await customerManager.TryAddCustomerWithAll(customer, userId);
+            if (success)
             {
-                return BadRequest(-1);
+                return Ok(customerId);
             }
             else
             {
-                var (success, customerId) = await customerManager.TryAddCustomerWithAll(customer, userId);
-                if (success)
-                {
-                    return Ok(customerId);
-                }
-                else
-                {
-                    return Conflict(-1);
-                }
+                return Conflict();
             }
         }
     }

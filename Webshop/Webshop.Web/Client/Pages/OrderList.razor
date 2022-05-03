@@ -1,0 +1,86 @@
+﻿@page "/orders"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+
+@attribute [Authorize]
+
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Your Orders</h3>
+
+@if (orders == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>OrderNumber</th>
+				<th>Status</th>
+				<th>Total</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var order in orders)
+			{
+				string link = $"/order/{order.Id}";
+				<tr>
+					<td>
+						<a href="@link">@order.Id</a>
+					</td>
+					<td>@order.Status</td>
+					<td>@order.Total</td>
+					<td>
+						<button type="button" class="btn btn-danger btn-sm" @onclick="(args) => CancelOrder(args, order)" disabled=@order.IsCancelledOrDelivered>Cancel</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private Webshop.Web.Shared.Models.Order[]? orders;
+
+	private string userId;
+
+	private double total;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == "sub")?.Value;
+		try
+		{
+			orders = await client.GetOrders(userId);
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task CancelOrder(MouseEventArgs args, Webshop.Web.Shared.Models.Order order)
+	{
+		try
+		{
+			if (await client.CancelOrder(order.Id, userId))
+			{
+				order.Status = "Cancelled";
+				order.IsCancelledOrDelivered = true;
+			}
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+}

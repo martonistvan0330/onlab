@@ -90,5 +90,37 @@ namespace Webshop.DAL.Repositories
                 return (false, -1);
             }
         }
-    }
+
+		public async Task<bool> AddStock(IReadOnlyCollection<Models.ProductStockWithId> productStocks)
+		{
+			foreach (var productStock in productStocks)
+			{
+                var dbRecord = await dbContext.ProductStock.FilterByProductIdAndSize(productStock.ProductId, productStock.SizeId).GetProductStockOrNull();
+                if (dbRecord == null)
+				{
+                    dbRecord = new ProductStock
+                    {
+                        ProductId = productStock.ProductId,
+                        SizeId = productStock.SizeId,
+                        Stock = productStock.Stock,
+                    };
+                    dbContext.ProductStock.Add(dbRecord);
+				}
+                else
+				{
+                    dbRecord.Stock += productStock.Stock;
+                    dbContext.ProductStock.Update(dbRecord);
+				}
+            }
+            try
+            {
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+	}
 }

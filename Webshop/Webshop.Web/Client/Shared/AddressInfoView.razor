@@ -1,0 +1,18 @@
+﻿@using Webshop.Web.Shared.Models
+
+<div class="container">
+    <p>First Name: @AddressInfo.FirstName</p>
+    <p>Last Name: @AddressInfo.LastName</p>
+    <p>Country: @AddressInfo.Address.Country</p>
+    <p>Region: @AddressInfo.Address.Region</p>
+    <p>ZipCode: @AddressInfo.Address.ZipCode</p>
+    <p>City: @AddressInfo.Address.City</p>
+    <p>Street: @AddressInfo.Address.Street</p>
+    <p>Phone Number: @AddressInfo.PhoneNumber</p>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public AddressInfo AddressInfo { get; set; }
+}

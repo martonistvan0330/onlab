@@ -66,13 +66,13 @@ namespace Webshop.DAL.Repositories.Extensions
                                   .ToArrayAsync();
         }*/
 
-        /*public static async Task<Customer?> GetCustomerByNameOrNull(this IQueryable<Customer> customers, string customerName, int userId)
+        public static async Task<Customer?> GetCustomerByNameOrNull(this IQueryable<Customer> customers, string customerName, string userId)
         {
             return await customers
                             .FilterByUser(userId)
                             .FindByName(customerName)
                             .GetCustomerOrNull();
-        }*/
+        }
 
         public static IQueryable<Customer> WithShippingInfo(this IQueryable<Customer> customers)
         {

@@ -178,8 +178,6 @@
 		ShippingInfoID int references ShippingInfo(ID),
 		PaymentInfoID int references PaymentInfo(ID),
 		MainCustomer bit,
-
-		CONSTRAINT UQ_CUSTOMER_NAME UNIQUE(UserID, Name),
 	)
 
 	create table [Cart]

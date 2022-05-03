@@ -35,12 +35,12 @@ namespace Webshop.Web.Server.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("{productId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<ProductDetails>> GetProduct([FromQuery] string productName)
+        public async Task<ActionResult<ProductDetails>> GetProduct([FromRoute] int productId)
         {
-            var product = await productManager.GetProductDetailsOrNull(productName);
+            var product = await productManager.GetProductDetailsOrNull(productId);
 
             if (product == null)
             {

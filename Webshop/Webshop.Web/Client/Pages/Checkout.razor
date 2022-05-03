@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Webshop.Web.Client.Clients
+@using Webshop.Web.Client.Models
 @using Webshop.Web.Shared.Models
 
 @attribute [Authorize]
@@ -13,91 +14,135 @@
 
 <h3>Place Your Order</h3>
 
-<div class="container">
-	<h4>Shipping</h4>
-	<div class="btn-group" role="group" aria-label="button group2">
-		<input type="radio" class="btn-check" name="options-outlined" id="delivery" autocomplete="off" checked>
-		<label class="btn btn-outline-primary" for="delivery">Delivery</label>
+<EditForm EditContext="@editContext" OnSubmit="@HandleSubmit" class="bg-dark text-white rounded w-auto p-3">
+    <DataAnnotationsValidator />
+	<div class="container">
+		<h4>Shipping </h4>
+		<InputRadioGroup @bind-Value=shipping class="mb-5">
+			<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+				<InputRadio Value=Shipping.Delivery class="btn-check" id="delivery" autocomplete="off" checked></InputRadio>
+				<label class="btn btn-outline-success text-white" for="delivery">Delivery</label>
 
-		<input type="radio" class="btn-check" name="options-outlined" id="store-pickup" autocomplete="off">
-		<label class="btn btn-outline-primary" for="store-pickup">Store pickup</label>
+				<InputRadio Value=Shipping.Pickup class="btn-check" id="store-pickup" autocomplete="off"></InputRadio>
+				<label class="btn btn-outline-success text-white" for="store-pickup">Store pickup</label>
 
-		<input type="radio" class="btn-check" name="options-outlined" id="foxpost" autocomplete="off">
-		<label class="btn btn-outline-primary" for="foxpost">FoxPost</label>
-	</div>
-	@if (delivery)
-	{
-		<AddressInput @ref="shippingAddress"></AddressInput>
-	}
-	@if (pickup)
-	{
-		<h5>Pickup</h5>
-	}
-	@if (foxpost)
-	{
-		<h5>FoxPost</h5>
-	}
-</div>
-
-<div class="container">
-	<h4>Payment Method</h4>
-	<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-		<input type="radio" class="btn-check" name="btnradio" id="cash" autocomplete="off" checked>
-		<label class="btn btn-outline-primary" for="cash">Cash</label>
-
-		<input type="radio" class="btn-check" name="btnradio" id="paypal" autocomplete="off">
-		<label class="btn btn-outline-primary" for="paypal">Paypal</label>
-
-		<input type="radio" class="btn-check" name="btnradio" id="after-delivery" autocomplete="off">
-		<label class="btn btn-outline-primary" for="after-delivery">Pay when delivered</label>
-	</div>
-</div>
-
-<div class="container">
-	<h4>Billing Address</h4>
-	<div class="form-check">
-		<input class="form-check-input" type="checkbox" @bind="sameAsShipping" id="flexCheckDefault">
-		<label class="form-check-label" for="flexCheckDefault">
-			Same as Shipping Address
-		</label>
+				<InputRadio Value=Shipping.FoxPost class="btn-check" id="foxpost" autocomplete="off"></InputRadio>
+				<label class="btn btn-outline-success text-white" for="foxpost">FoxPost</label>
+			</div>
+		</InputRadioGroup>
+		@switch (shipping)
+		{
+			case Shipping.Delivery:
+			{
+				<AddressInput @ref=shippingAddressInput AddressInfoModel=model.ShippingAddressInfo></AddressInput>
+				break;
+			}
+			case Shipping.Pickup:
+			{
+				<h5>Store Pickup</h5>
+				break;
+			}
+			case Shipping.FoxPost:
+			{
+				<h5>FoxPost</h5>
+				break;
+			}
+		}
 	</div>
 
-@if (!sameAsShipping)
-{
-	<AddressInput @ref="billingAddress"></AddressInput>
-}
-</div>
+	<div class="container">
+		<h4>Payment Method</h4>
+		<InputRadioGroup @bind-Value=payment class="mb-5">
+			<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+				<InputRadio Value=Payment.Cash class="btn-check" id="cash" autocomplete="off" checked></InputRadio>
+				<label class="btn btn-outline-success text-white" for="cash">Cash</label>
 
-<button class="btn btn-primary btn-lg" @onclick="PlaceOrder">Place Order</button>
+				<InputRadio Value=Payment.Paypal class="btn-check" id="paypal" autocomplete="off"></InputRadio>
+				<label class="btn btn-outline-success text-white" for="paypal">Paypal</label>
+
+				<InputRadio Value=Payment.OnDelivery class="btn-check" id="ondelivered" autocomplete="off"></InputRadio>
+				<label class="btn btn-outline-success text-white" for="ondelivered">Pay when delivered</label>
+			</div>
+		</InputRadioGroup>
+		@switch (payment)
+		{
+			case Payment.Cash:
+			{
+				<h5>Cash</h5>
+				break;
+			}
+			case Payment.Paypal:
+			{
+				<h5>Paypal</h5>
+				break;
+			}
+			case Payment.OnDelivery:
+			{
+				<h5>Pay when delivered</h5>
+				break;
+			}
+		}
+	</div>
+
+	<div class="container">
+		<h4>Billing Address</h4>
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" @bind="sameAsShipping" id="flexCheckDefault">
+			<label class="form-check-label" for="flexCheckDefault">
+				Same as Shipping Address
+			</label>
+		</div>
+		@if (!sameAsShipping)
+		{
+			<AddressInput AddressInfoModel=model.BillingAddressInfo></AddressInput>
+		}
+	</div>
+
+	<div class="container">
+		<button class="btn btn-primary btn-lg" type="submit">Place Order</button>
+	</div>
+</EditForm>
+
 
 @code {
 	private string userId;
 
-	AddressInput shippingAddress;
+	CheckoutModel model = new();
 
-	AddressInput billingAddress;
+	private EditContext? editContext;
+
+	AddressInput shippingAddressInput;
+
+	AddressInput billingAddressInput;
 
 	private int customerId;
-	private int orderId;
 
-	private bool delivery;
-	private bool pickup;
-	private bool foxpost;
+	private Shipping shipping = Shipping.Delivery;
 
-	private bool cash;
-	private bool paypal;
-	private bool afterDelivery;
+	private Payment payment = Payment.Cash;
 
-	private bool sameAsShipping;
+	private bool sameAsShipping = true;
+
+	private EditForm form;
 
 	protected override async Task OnInitializedAsync()
 	{
+		editContext = new(model);
 		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 		var user = authState.User;
 		userId = user.FindFirst(c => c.Type == "sub")?.Value;
-		delivery = true;
-		cash = true;
-		sameAsShipping = true;
+	}
+
+	private async Task HandleSubmit()
+	{
+		if (editContext != null && 
+			editContext.Validate() && 
+			shippingAddressInput.Validate() && 
+			(sameAsShipping || billingAddressInput.Validate()))
+		{
+			await PlaceOrder();
+			await Task.CompletedTask;
+		}
 	}
 
 	private async Task PlaceOrder()
@@ -105,35 +150,40 @@
 		customerId = await SaveCustomer();
 		if (customerId > 0)
 		{
-			orderId = await client.CreateOrder(userId, customerId);
-			NavManager.NavigateTo("/order");
+			var (success, orderId) = await client.CreateOrder(userId, customerId);
+			if (success)
+			{
+				NavManager.NavigateTo($"/order/{orderId}");
+			}
+			else
+			{
+				NavManager.NavigateTo("/error");
+			}
 		}
 	}
 
 	private async Task<int> SaveCustomer()
 	{
-		var shippingAddressInfo = shippingAddress.GetAddressInfo();
-		var billingAddressInfo = shippingAddress.GetAddressInfo();
-		if (!sameAsShipping)
+		if (sameAsShipping)
 		{
-			billingAddressInfo = billingAddress.GetAddressInfo();
+			model.BillingAddressInfo = model.ShippingAddressInfo;
 		}
-		if (shippingAddressInfo != null && billingAddressInfo != null)
+		if (model.BillingAddressInfo != null && model.ShippingAddressInfo != null)
 		{
 			var newCustomer = new NewCustomer()
 			{
-				Name = shippingAddressInfo.FirstName + " " + shippingAddressInfo.LastName,
+				Name = model.ShippingAddressInfo.FirstName + " " + model.ShippingAddressInfo.LastName,
 				ShippingInfo = new ShippingInfo()
 				{
 					ShippingMethodId = 1,
 					ShippingMethodName = "Shipping",
-					ShippingAddressInfo = shippingAddressInfo,
+					ShippingAddressInfo = model.ShippingAddressInfo,
 				},
 				PaymentInfo = new PaymentInfo()
 				{
 					PaymentMethodId = 1,
 					PaymentMethodName = "Cash",
-					BillingAddressInfo = billingAddressInfo,
+					BillingAddressInfo = model.BillingAddressInfo,
 				},
 			};
 			return await client.AddCustomer(newCustomer, userId);

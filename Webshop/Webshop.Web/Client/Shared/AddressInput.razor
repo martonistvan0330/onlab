@@ -1,86 +1,84 @@
 ﻿@using Webshop.Web.Shared.Models
 
+<EditForm EditContext=addressInfoEditContext Context="addressInfoContext">
+	<DataAnnotationsValidator/>
+	<div class="col-md-4">
+		<label class="form-label">
+			First Name
+			<InputText @bind-Value=AddressInfoModel.FirstName DisplayName="First Name" class="form-control"></InputText>
+			<ValidationMessage For="@(() => AddressInfoModel.FirstName)" />
+		</label>
+	</div>
+	<div>
+		<label class="col-md-4 form-label">
+			Last Name
+			<InputText @bind-Value=AddressInfoModel.LastName DisplayName="Last Name" class="form-control"></InputText>
+			<ValidationMessage For="@(() => AddressInfoModel.LastName)" />
+		</label>
+	</div>
+	<EditForm EditContext=addressEditContext Context="addressContext">
+		<DataAnnotationsValidator/>
+		<div>
+			<label class="col-md-4 form-label">
+				Country
+				<InputText @bind-Value=AddressInfoModel.Address.Country class="form-control"></InputText>
+				<ValidationMessage For="@(() => AddressInfoModel.Address.Country)" />
+			</label>
+		</div>
+		<div>
+			<label class="col-md-4 form-label">
+				Region
+				<InputText @bind-Value=AddressInfoModel.Address.Region class="form-control"></InputText>
+				<ValidationMessage For="@(() => AddressInfoModel.Address.Region)" />
+			</label>
+		</div>
+		<div>
+			<label class="col-md-4 form-label">
+				ZIP Code
+				<InputText @bind-Value=AddressInfoModel.Address.ZipCode DisplayName="ZIP Code" class="form-control"></InputText>
+				<ValidationMessage For="@(() => AddressInfoModel.Address.ZipCode)" />
+			</label>
+		</div>
+		<div>
+			<label class="col-md-4 form-label">
+				City
+				<InputText @bind-Value=AddressInfoModel.Address.City class="form-control"></InputText>
+				<ValidationMessage For="@(() => AddressInfoModel.Address.City)" />
+			</label>
+		</div>
+		<div>
+			<label class="col-md-4 form-label">
+				Street
+				<InputText @bind-Value=AddressInfoModel.Address.Street class="form-control"></InputText>
+				<ValidationMessage For="@(() => AddressInfoModel.Address.Street)" />
+			</label>
+		</div>
+	</EditForm>
+	<div>
+		<label class="col-md-4 form-label">
+			Phone Number
+			<InputText @bind-Value=AddressInfoModel.PhoneNumber DisplayName="Phone Number" class="form-control"></InputText>
+			<ValidationMessage For="@(() => AddressInfoModel.PhoneNumber)" />
+		</label>
+	</div>
+</EditForm>
 
-<div class="mb-3 row">
-	<label for="firstname" class="col-sm-2 col-form-label">First Name: </label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" id="firstname" @bind="firstName">
-	</div>
-</div>
-<div class="mb-3 row">
-	<label for="lastname" class="col-sm-2 col-form-label">Last Name: </label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" id="lastname" @bind="lastName">
-	</div>
-</div>
-<div class="mb-3 row">
-	<label for="country" class="col-sm-2 col-form-label">Country: </label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" id="country" @bind="country">
-	</div>
-</div>
-<div class="mb-3 row">
-	<label for="region" class="col-sm-2 col-form-label">Region: </label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" id="region" @bind="region">
-	</div>
-</div>
-<div class="mb-3 row">
-	<label for="zipcode" class="col-sm-2 col-form-label">ZipCode: </label>
-	<div class="col-sm-10">
-		<input type="number" class="form-control" id="zipcode" @bind="zipCode">
-	</div>
-</div>
-<div class="mb-3 row">
-	<label for="city" class="col-sm-2 col-form-label">City: </label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" id="city" @bind="city">
-	</div>
-</div>
-<div class="mb-3 row">
-	<label for="street" class="col-sm-2 col-form-label">Street: </label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" id="street" @bind="street">
-	</div>
-</div>
-<div class="mb-3 row">
-	<label for="phonenumber" class="col-sm-2 col-form-label">Phone Number: </label>
-	<div class="col-sm-10">
-		<input type="number" class="form-control" id="phonenumber" @bind="phoneNumber">
-	</div>
-</div>
 @code {
-	private string firstName;
-	private string lastName;
-	private string country;
-	private string region;
-	private string zipCode;
-	private string city;
-	private string street;
-	private string phoneNumber;
+	[Parameter]
+	[EditorRequired]
+	public AddressInfo AddressInfoModel { get; set; }
 
-	public AddressInfo? GetAddressInfo()
+	private EditContext? addressInfoEditContext;
+	private EditContext? addressEditContext;
+
+	protected override async Task OnInitializedAsync()
 	{
-		if (true)
-		{
-			return new AddressInfo()
-			{
-				FirstName = firstName,
-				LastName = lastName,
-				Address = new Address()
-				{
-					Country = country,
-					Region = region,
-					ZipCode = zipCode,
-					City = city,
-					Street = street,
-				},
-				PhoneNumber = phoneNumber,
-			};
-		}
-		else
-		{
-			return null;
-		}
+		addressInfoEditContext = new(AddressInfoModel);
+		addressEditContext = new(AddressInfoModel.Address);
+	}
+
+	public bool Validate()
+	{
+		return ((addressInfoEditContext != null && addressInfoEditContext.Validate()) & (addressEditContext != null && addressEditContext.Validate()));
 	}
 }

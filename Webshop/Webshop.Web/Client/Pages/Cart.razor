@@ -16,6 +16,10 @@
 {
 	<p><em>Loading...</em></p>
 }
+else if (cartItems.Count() <= 0)
+{
+	<p><em>Cart is empty</em></p>
+} 
 else
 {
 	<table class="table">
@@ -34,56 +38,7 @@ else
 				<tr>
 					<td>@cartItem.ProductName</td>
 					<td>
-						<select class="form-select" aria-label="size select" @onchange="(args) => SizeChanged(args, cartItem)">
-							@if (cartItem.SizeId == 1)
-							{
-								<option selected value="1">XS</option>
-							}
-							else
-							{
-								<option value="1">XS</option>
-							}
-							@if (cartItem.SizeId == 2)
-							{
-								<option selected value="2">S</option>
-							}
-							else
-							{
-								<option value="2">S</option>
-							}
-							@if (cartItem.SizeId == 3)
-							{
-								<option selected value="3">M</option>
-							}
-							else
-							{
-								<option value="3">M</option>
-							}
-							@if (cartItem.SizeId == 4)
-							{
-								<option selected value="4">L</option>
-							}
-							else
-							{
-								<option value="4">L</option>
-							}
-							@if (cartItem.SizeId == 5)
-							{
-								<option selected value="5">XL</option>
-							}
-							else
-							{
-								<option value="5">XL</option>
-							}
-							@if (cartItem.SizeId == 6)
-							{
-								<option selected value="6">XXL</option>
-							}
-							else
-							{
-								<option value="6">XXL</option>
-							}
-						</select>
+						<SizeChooser CartItem=@cartItem></SizeChooser>
 					</td>
 					<td>
 						<button type="button" class="btn btn-danger btn-sm" @onclick="(args) => AmountChanged(args, cartItem, -1)">-</button>
@@ -124,7 +79,7 @@ else
 		{
 			exception.Redirect();
 		}
-		CalculateTotal();
+		total = await CalculateTotal();
 	}
 
 	private async Task SizeChanged(ChangeEventArgs e, CartItem cartItem)
@@ -164,7 +119,7 @@ else
 					cartItem.Amount = previousValue;
 				}
 				cartItem.Price = cartItem.Amount * unitPrice;
-				CalculateTotal();
+				total = await CalculateTotal();
 			}
 			catch (AccessTokenNotAvailableException exception)
 			{
@@ -181,7 +136,7 @@ else
 			if (success)
 			{
 				cartItems = cartItems.Where(ci => ci.Id != cartItem.Id).ToArray();
-				CalculateTotal();
+				total = await CalculateTotal();
 			}
 		}
 		catch (AccessTokenNotAvailableException exception)
@@ -190,13 +145,14 @@ else
 		}
 	}
 
-	private void CalculateTotal()
+	private async Task<double> CalculateTotal()
 	{
-		double newTotal = 0;
-		foreach (var cartItem in cartItems)
-		{
-			newTotal += cartItem.Price;
-		}
-		total = newTotal;
+		return await Task.Run(() => { double newTotal = 0;
+			foreach (var cartItem in cartItems)
+			{
+				newTotal += cartItem.Price;
+			}
+			return newTotal;
+		});
 	}
 }

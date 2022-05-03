@@ -15,6 +15,9 @@ namespace Webshop.Web.Client.Clients
         public async Task<Product[]?> GetMainPageProducts()
             => await Client.GetFromJsonAsync<Product[]>("api/product/main");
 
+        public async Task<ProductDetails?> GetProduct(int productId)
+            => await Client.GetFromJsonAsync<ProductDetails>($"api/product/{productId}");
+
         public async Task<Category[]?> GetMainCategories()
             => await Client.GetFromJsonAsync<Category[]>("api/category/main");
 
