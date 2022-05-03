@@ -9,7 +9,7 @@ namespace Webshop.Web.Shared.Models
 	public enum Payment
 	{
 		Cash,
+		Card,
 		Paypal,
-		OnDelivery,
 	}
 }

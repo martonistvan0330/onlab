@@ -8,7 +8,7 @@ namespace Webshop.DAL.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        public const int PAGES_PER_PRODUCT = 6;
+        public const int PAGES_PER_PRODUCT = 2;
 
         private readonly WebshopDbContext dbContext;
 

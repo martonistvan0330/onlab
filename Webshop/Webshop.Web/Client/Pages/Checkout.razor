@@ -57,11 +57,11 @@
 				<InputRadio Value=Payment.Cash class="btn-check" id="cash" autocomplete="off" checked></InputRadio>
 				<label class="btn btn-outline-success text-white" for="cash">Cash</label>
 
+				<InputRadio Value=Payment.Card class="btn-check" id="card" autocomplete="off"></InputRadio>
+				<label class="btn btn-outline-success text-white" for="card">Card</label>
+
 				<InputRadio Value=Payment.Paypal class="btn-check" id="paypal" autocomplete="off"></InputRadio>
 				<label class="btn btn-outline-success text-white" for="paypal">Paypal</label>
-
-				<InputRadio Value=Payment.OnDelivery class="btn-check" id="ondelivered" autocomplete="off"></InputRadio>
-				<label class="btn btn-outline-success text-white" for="ondelivered">Pay when delivered</label>
 			</div>
 		</InputRadioGroup>
 		@switch (payment)
@@ -71,14 +71,14 @@
 				<h5>Cash</h5>
 				break;
 			}
+			case Payment.Card:
+			{
+				<h5>Card</h5>
+				break;
+			}
 			case Payment.Paypal:
 			{
 				<h5>Paypal</h5>
-				break;
-			}
-			case Payment.OnDelivery:
-			{
-				<h5>Pay when delivered</h5>
 				break;
 			}
 		}
