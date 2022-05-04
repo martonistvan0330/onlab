@@ -92,13 +92,12 @@ namespace Webshop.DAL.Repositories.Extensions
                     .Include(c => c.PaymentInfo.BillingAddressInfo.Address);
         }
 
-        /*public static Models.Customer GetCustomer(this Customer dbRecord)
+        public static Models.Customer GetCustomer(this Customer dbRecord)
             => new Models.Customer(
                 dbRecord.Name,
                 new Models.ShippingInfo(
-                    new Models.ShippingMethod(
-                        dbRecord.ShippingInfo.ShippingMethod.Method
-                        ),
+                    dbRecord.ShippingInfo.ShippingMethod.Id,
+                    dbRecord.ShippingInfo.ShippingMethod.Method,
                     new Models.AddressInfo(
                         dbRecord.ShippingInfo.ShippingAddressInfo.FirstName,
                         dbRecord.ShippingInfo.ShippingAddressInfo.LastName,
@@ -113,10 +112,8 @@ namespace Webshop.DAL.Repositories.Extensions
                         )
                     ),
                 new Models.PaymentInfo(
-                    new Models.PaymentMethod(
-                        dbRecord.PaymentInfo.PaymentMethod.Method,
-                        dbRecord.PaymentInfo.PaymentMethod.Deadline
-                        ),
+                    dbRecord.PaymentInfo.PaymentMethod.Id,
+                    dbRecord.PaymentInfo.PaymentMethod.Method,
                     new Models.AddressInfo(
                         dbRecord.PaymentInfo.BillingAddressInfo.FirstName,
                         dbRecord.PaymentInfo.BillingAddressInfo.LastName,
@@ -130,7 +127,7 @@ namespace Webshop.DAL.Repositories.Extensions
                         dbRecord.PaymentInfo.BillingAddressInfo.PhoneNumber
                         )
                     )
-                );*/
+                );
 
         public static async Task<int> GetId(this IQueryable<Customer> customers)
             => await customers.Select(c => c.Id).SingleAsync();

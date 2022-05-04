@@ -14,7 +14,7 @@
 
 <h3>Place Your Order</h3>
 
-<EditForm EditContext="@editContext" OnSubmit="@HandleSubmit" class="bg-dark text-white rounded w-auto p-3">
+<EditForm id="checkout-form" EditContext="@editContext" OnSubmit="@HandleSubmit" class="bg-dark text-white rounded w-auto p-3">
     <DataAnnotationsValidator />
 	<div class="container">
 		<h4>Shipping </h4>
@@ -64,24 +64,6 @@
 				<label class="btn btn-outline-success text-white" for="paypal">Paypal</label>
 			</div>
 		</InputRadioGroup>
-		@switch (payment)
-		{
-			case Payment.Cash:
-			{
-				<h5>Cash</h5>
-				break;
-			}
-			case Payment.Card:
-			{
-				<h5>Card</h5>
-				break;
-			}
-			case Payment.Paypal:
-			{
-				<h5>Paypal</h5>
-				break;
-			}
-		}
 	</div>
 
 	<div class="container">
@@ -108,11 +90,9 @@
 	private string userId;
 
 	CheckoutModel model = new();
-
 	private EditContext? editContext;
 
 	AddressInput shippingAddressInput;
-
 	AddressInput billingAddressInput;
 
 	private int customerId;
@@ -133,6 +113,7 @@
 		userId = user.FindFirst(c => c.Type == "sub")?.Value;
 	}
 
+
 	private async Task HandleSubmit()
 	{
 		if (editContext != null && 
@@ -140,26 +121,43 @@
 			shippingAddressInput.Validate() && 
 			(sameAsShipping || billingAddressInput.Validate()))
 		{
-			await PlaceOrder();
-			await Task.CompletedTask;
+			customerId = await SaveCustomer();
+			if (customerId > 0)
+			{
+				switch (payment)
+				{
+					case Payment.Cash:
+						{
+							await CreatOrder();
+							await Task.CompletedTask;
+							break;
+						}
+					case Payment.Card:
+						{
+							GoToCardPayment();
+							break;
+						}
+				}
+			}
 		}
 	}
 
-	private async Task PlaceOrder()
+	private async Task CreatOrder()
 	{
-		customerId = await SaveCustomer();
-		if (customerId > 0)
+		var (success, orderId) = await client.CreateOrder(userId, customerId);
+		if (success)
 		{
-			var (success, orderId) = await client.CreateOrder(userId, customerId);
-			if (success)
-			{
-				NavManager.NavigateTo($"/order/{orderId}");
-			}
-			else
-			{
-				NavManager.NavigateTo("/error");
-			}
+			NavManager.NavigateTo($"/order/{orderId}");
 		}
+		else
+		{
+			NavManager.NavigateTo("/error");
+		}
+	}
+
+	private async Task GoToCardPayment()
+	{
+		NavManager.NavigateTo($"/card?customerid={customerId}");
 	}
 
 	private async Task<int> SaveCustomer()
@@ -171,21 +169,21 @@
 		if (model.BillingAddressInfo != null && model.ShippingAddressInfo != null)
 		{
 			var newCustomer = new NewCustomer()
-			{
-				Name = model.ShippingAddressInfo.FirstName + " " + model.ShippingAddressInfo.LastName,
-				ShippingInfo = new ShippingInfo()
 				{
-					ShippingMethodId = 1,
-					ShippingMethodName = "Shipping",
-					ShippingAddressInfo = model.ShippingAddressInfo,
-				},
-				PaymentInfo = new PaymentInfo()
-				{
-					PaymentMethodId = 1,
-					PaymentMethodName = "Cash",
-					BillingAddressInfo = model.BillingAddressInfo,
-				},
-			};
+					Name = model.BillingAddressInfo.FirstName + " " + model.BillingAddressInfo.LastName,
+					ShippingInfo = new ShippingInfo()
+					{
+						ShippingMethodId = (int) shipping,
+						ShippingMethodName = shipping.ToString(),
+						ShippingAddressInfo = model.ShippingAddressInfo,
+					},
+					PaymentInfo = new PaymentInfo()
+					{
+						PaymentMethodId = (int) payment,
+						PaymentMethodName = payment.ToString(),
+						BillingAddressInfo = model.BillingAddressInfo,
+					},
+				};
 			return await client.AddCustomer(newCustomer, userId);
 		}
 		else

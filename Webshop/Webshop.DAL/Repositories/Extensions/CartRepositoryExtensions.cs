@@ -12,6 +12,17 @@ namespace Webshop.DAL.Repositories.Extensions
                     .Where(c => c.UserId.Equals(userId));
         }
 
+        public static IQueryable<Cart> WithCartItems(this IQueryable<Cart> carts)
+        {
+            return carts.Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product);
+        }
+
+        public static IQueryable<double> GetTotal(this IQueryable<Cart> carts)
+        {
+            return carts.Select(c => c.CartItems.Sum(ci => ci.Amount * ci.Product.Price));
+        }
+
         /*public static async Task<bool> ExistsBySession(this IQueryable<Cart> carts, string sessionId)
         {
             var dbCart = await carts

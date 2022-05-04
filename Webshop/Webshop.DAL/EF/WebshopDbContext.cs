@@ -87,7 +87,7 @@ namespace Webshop.DAL.EF
                 entity.Property(e => e.SizeId).HasColumnName("SizeID");
 
                 entity.HasOne(d => d.Cart)
-                    .WithMany(p => p.Items)
+                    .WithMany(p => p.CartItems)
                     .HasForeignKey(d => d.CartId);
 
                 entity.HasOne(d => d.Product)

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using System.Configuration;
 using Webshop.BL;
 using Webshop.DAL.EF;
 using Webshop.DAL.Repositories;
@@ -34,6 +36,8 @@ builder.Services.AddRouting();
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -135,6 +139,7 @@ builder.Services.AddTransient<UserManager>();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -147,6 +152,8 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+StripeConfiguration.ApiKey = "sk_test_51KvQWBDwqMZnbyqHr40r9Bf20zZPDLf1Pp9qM2osQ8EB89HRFTgncLldTLF3dDJmf4Il6L4MDS0rCcOJcjvcv65T00gazw6lYT";
 
 app.UseHttpsRedirection();
 

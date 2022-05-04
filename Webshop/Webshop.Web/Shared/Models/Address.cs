@@ -15,6 +15,7 @@ namespace Webshop.Web.Shared.Models
         [Required]
         public string Region { get; set; }
         [Required]
+        [StringLength(10, ErrorMessage = "ZIP Code too long")]
         [DataType(DataType.PostalCode)]
         public string ZipCode { get; set; }
         [Required]

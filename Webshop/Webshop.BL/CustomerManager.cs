@@ -58,6 +58,11 @@ namespace Webshop.BL
             return await customerRepository.ListCustomers(userId.Value);
         }*/
 
+        public async Task<Customer> GetById(int customerId, string userId)
+        {
+            return await customerRepository.GetById(customerId, userId);
+        }
+
         public async Task<(bool, int)> TryAddCustomerWithAll(Customer customer, string userId)
         {
             using (var transaction = new TransactionScope(
@@ -70,28 +75,23 @@ namespace Webshop.BL
                 var (billingAddressSuccess, billingAddressId)
                     = await TryAddAddress(customer.PaymentInfo.BillingAddressInfo.Address);
 
-                Console.WriteLine("POGGERS0");
                 if (shippingAddressSuccess && billingAddressSuccess)
                 {
-                    Console.WriteLine("POGGERS1");
                     var (shippingAddressInfoSuccess, shippingAddressInfoId)
                         = await TryAddAddressInfo(customer.ShippingInfo.ShippingAddressInfo, shippingAddressId);
                     var (billingAddressInfoSuccess, billingAddressInfoId)
                         = await TryAddAddressInfo(customer.PaymentInfo.BillingAddressInfo, billingAddressId);
                     if (shippingAddressInfoSuccess && billingAddressInfoSuccess)
                     {
-                        Console.WriteLine("POGGERS2");
                         var (shippingInfoSuccess, shippingInfoId)
                             = await TryAddShippingInfo(customer.ShippingInfo, shippingAddressInfoId);
                         var (paymentInfoSuccess, paymentInfoId)
                             = await TryAddPaymentInfo(customer.PaymentInfo, billingAddressInfoId);
                         if (shippingInfoSuccess && paymentInfoSuccess)
                         {
-                            Console.WriteLine("POGGERS3");
                             var (success, customerId) = await TryAddCustomer(customer, shippingInfoId, paymentInfoId, userId);
                             if (success)
                             {
-                                Console.WriteLine("POGGERS4");
                                 transaction.Complete();
                                 return (true, customerId);
                             }

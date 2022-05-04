@@ -8,8 +8,8 @@ namespace Webshop.Web.Shared.Models
 {
 	public enum Shipping
 	{
-		Delivery,
-		Pickup,
-		FoxPost,
+		Delivery = 1,
+		Pickup = 2,
+		FoxPost = 3,
 	}
 }
