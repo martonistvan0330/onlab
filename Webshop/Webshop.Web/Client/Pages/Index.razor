@@ -8,39 +8,41 @@
 
 @inject PublicClient client
 
-<h1>Products</h1>
+<div class="page">
+    <h1>Products</h1>
 
-@if (products == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="container">
-        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3">
-        @foreach (var product in products)
-        {
-            string productLink = $"/product/{product.Id}";
+    @if (products == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3">
+            @foreach (var product in products)
+            {
+                string productLink = $"/product/{product.Id}";
 
-            <div class="col mb-4">
-                <div class="card text-white bg-dark border-dark" style="width: 18rem;">
-                    <NavLink href="@productLink">
-                        <img class="card-img-top bg-light" src="@product.ImageSource">
-                    </NavLink>
-                    <div class="card-body">
+                <div class="col mb-4">
+                    <div class="card text-white bg-dark border-dark" style="width: 18rem;">
                         <NavLink href="@productLink">
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text">@product.Price Ft</p>
+                            <img class="card-img-top bg-light" src="@product.ImageSource">
                         </NavLink>
-                        <AddToCart ProductId=@product.Id></AddToCart>
-                    </div>
+                        <div class="card-body">
+                            <NavLink href="@productLink">
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="card-text">@product.Price Ft</p>
+                            </NavLink>
+                            <AddToCart ProductId=@product.Id></AddToCart>
+                        </div>
                     
+                    </div>
                 </div>
+            }
             </div>
-        }
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     private Product[]? products;

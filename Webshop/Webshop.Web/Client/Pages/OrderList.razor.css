@@ -1,0 +1,19 @@
+﻿table {
+    max-width: 900px;
+}
+
+.order-number {
+    width: 25%;
+}
+
+.status {
+    width: 25%;
+}
+
+.total {
+    width: 25%;
+}
+
+.cancel {
+    width: 25%;
+}

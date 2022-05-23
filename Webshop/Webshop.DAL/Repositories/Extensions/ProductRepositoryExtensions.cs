@@ -122,6 +122,6 @@ namespace Webshop.DAL.Repositories.Extensions
             => new Models.Product(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource);
 
         public static Models.ProductDetails GetProductDetails(this Product dbRecord)
-            => new Models.ProductDetails(dbRecord.Name, dbRecord.Price, dbRecord.Vat.Percentage, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource);
+            => new Models.ProductDetails(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource, dbRecord.ProductImages.Where(pi => !pi.MainImage).Select(pi => pi.ImageSource).ToList());
     }
 }

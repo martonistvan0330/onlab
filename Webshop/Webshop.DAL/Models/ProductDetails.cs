@@ -2,20 +2,21 @@
 {
     public class ProductDetails
     {
+        public readonly int Id;
         public readonly string Name;
         public readonly double Price;
-        public readonly int VatPercentage;
-        public readonly string ImageSource;
-        public readonly string Description;
+        public readonly string MainImageSource;
+        public readonly List<string> ImageSources;
 
         public ProductDetails() { }
 
-        public ProductDetails(string name, double price, int vatPercentage, string imageSource)
+        public ProductDetails(int id, string name, double price, string mainImageSource, List<string> imageSources)
         {
+            Id = id;
             Name = name;
             Price = price;
-            VatPercentage = vatPercentage;
-            ImageSource = imageSource;
+            MainImageSource = mainImageSource;
+            ImageSources = imageSources;
         }
     }
 }

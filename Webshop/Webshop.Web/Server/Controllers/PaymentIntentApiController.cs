@@ -71,7 +71,7 @@ namespace Webshop.Web.Server.Controllers
 		private async Task<int> CalculateOrderAmount(string userId)
 		{
 			var total = await cartManager.GetTotal(userId);
-			return (int) Math.Round((total * 100), 0);
+			return (int) Math.Round(total, 0) * 100;
  		}
 
 		public class PaymentIntentCreateRequest
