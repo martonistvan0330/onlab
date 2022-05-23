@@ -10,7 +10,8 @@ namespace Webshop.DAL.EF
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
-        public string ImageSource { get; set; }
+        public string FileName { get; set; }
+        public byte[] Image { get; set; }
         public bool MainImage { get; set; }
 
         public Product Product { get; set; }

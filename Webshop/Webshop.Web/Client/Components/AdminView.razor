@@ -1,0 +1,44 @@
+﻿@inherits ComponentBase
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Clients
+
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (isLoading)
+{
+	<p>Loading</p>
+}
+else
+{
+	@if (isAdmin)
+	{
+		@ChildContent
+	}
+	else if (ErrorText != null)
+	{
+		@ErrorText
+	}	
+}
+
+@code {
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+	[Parameter]
+	public string? ErrorText { get; set; }
+
+	private bool isLoading;
+	private bool isAdmin;
+
+	protected override async Task OnInitializedAsync()
+	{
+		isLoading = true;
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		var userId = user.FindFirst(c => c.Type == "sub")?.Value;
+		isAdmin = await client.IsAdmin(userId);
+		isLoading = false;
+	}
+}

@@ -1,0 +1,127 @@
+﻿@page "/admin/newproduct"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Net.Http.Headers
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+@using Webshop.Web.Client.Components
+
+@attribute [Authorize]
+
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="page">
+	<h3>Add new product</h3>
+
+	<EditForm EditContext=editContext OnSubmit="@HandleSubmit" class="bg-dark text-white rounded w-auto p-3">
+		<DataAnnotationsValidator/>
+		<label class="form-label">
+			Name
+			<InputText @bind-Value=newProduct.Name DisplayName="Product Name" class="form-control"/>
+			<ValidationMessage For="@(() => newProduct.Name)" />
+		</label>
+		<label class="form-label">
+			Price
+			<InputNumber @bind-Value=newProduct.Price DisplayName="Price" class="form-control" min=1000 max=200000/>
+			<ValidationMessage For="@(() => newProduct.Price)" />
+		</label>
+		<label class="form-label">
+			Main Image
+			<InputFile OnChange="@OnInputFileChange" DisplayName="Image" class="form-control" accept="image/png"></InputFile>
+			<p>@ImageError</p>
+		</label>
+		<label class="form-label">
+			XS
+			<InputNumber @bind-Value=newProduct.XS class="form-control" min=0 max=100/>
+			<ValidationMessage For="@(() => newProduct.XS)" />
+		</label>
+		<label class="form-label">
+			S
+			<InputNumber @bind-Value=newProduct.S class="form-control" min=0 max=100/>
+			<ValidationMessage For="@(() => newProduct.S)" />
+		</label>
+		<label class="form-label">
+			M
+			<InputNumber @bind-Value=newProduct.M class="form-control" min=0 max=100/>
+			<ValidationMessage For="@(() => newProduct.M)" />
+		</label>
+		<label class="form-label">
+			L
+			<InputNumber @bind-Value=newProduct.L class="form-control" min=0 max=100/>
+			<ValidationMessage For="@(() => newProduct.L)" />
+		</label>
+		<label class="form-label">
+			XL
+			<InputNumber @bind-Value=newProduct.XL class="form-control" min=0 max=100/>
+			<ValidationMessage For="@(() => newProduct.XL)" />
+		</label>
+		<label class="form-label">
+			XXL
+			<InputNumber @bind-Value=newProduct.XXL class="form-control" min=0 max=100/>
+			<ValidationMessage For="@(() => newProduct.XXL)" />
+		</label>
+		<button class="btn btn-success btn-lg" type="submit">Add Product</button>
+	</EditForm>
+</div>
+
+@code {
+	private string userId;
+
+	private NewProduct newProduct = new NewProduct();
+
+	private EditContext? editContext;
+
+	private const long maxFileSize = 1024 * 1024 * 100;
+
+	private string ImageError;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == "sub")?.Value;
+		editContext = new(newProduct);
+	}
+
+	private async Task OnInputFileChange(InputFileChangeEventArgs e)
+	{
+		using var content = new MultipartFormDataContent();
+
+		var file = e.File;
+		if (file.ContentType.Contains("png"))
+		{
+			try
+			{
+				var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+				fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+				content.Add(
+					content: fileContent,
+					name: "\"files\"",
+					fileName: file.Name);
+				newProduct.Image = content;
+				ImageError = "";
+			}
+			catch (Exception ex)
+			{
+				ImageError = "something went wrong";
+			}
+		}
+		else
+		{
+			ImageError = "not a png";
+		}
+	}
+
+	private async Task HandleSubmit()
+	{
+		if (editContext != null && 
+			editContext.Validate() &&
+			string.IsNullOrEmpty(ImageError))
+		{
+			/*var productId = await SaveProduct();
+			NavManager.NavigateTo($"/order/{orderId}");*/
+		}
+	}
+}

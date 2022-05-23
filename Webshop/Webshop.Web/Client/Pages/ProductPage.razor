@@ -13,23 +13,25 @@
 	}
 	else
 	{
+		<br/>
+		<br/>
 		<div class="images">
 			<div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="carousel">
 				<div class="carousel-indicators">
 					<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-					@for (int i = 1; i <= product.ImageSources.Count; i++)
+					@for (int i = 1; i <= product.Images.Count; i++)
 					{
 						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" aria-label="Slide"></button>	
 					}
 				</div>
 				<div class="carousel-inner">
 					<div class="carousel-item active">
-						<img src="@product.MainImageSource" class="d-block w-100 bg-light">
+						<img src="@ConvertImageToDisplay(product.MainImage)" class="d-block w-100 bg-light">
 					</div>
-					@foreach (var imageSource in product.ImageSources)
+					@foreach (var image in product.Images)
 					{
 						<div class="carousel-item">
-							<img src="@imageSource" class="d-block w-100 bg-light">
+							<img src="@ConvertImageToDisplay(image)" class="d-block w-100 bg-light">
 						</div>
 					}
 				</div>
@@ -83,5 +85,16 @@
 	private async Task SizeChanged(ChangeEventArgs e)
 	{
 		sizeId = int.Parse(e.Value.ToString());
+	}
+
+	private string ConvertImageToDisplay(byte[] image)
+	{
+		if (image != null)
+		{
+			var base64 = Convert.ToBase64String(image);
+			var fs = string.Format("data:image/png;base64,{0}", base64);
+			return fs;
+		}
+		return "";
 	}
 }

@@ -68,7 +68,7 @@ namespace Webshop.DAL.Repositories.Extensions
 										orderItem.Size.Name,
 										orderItem.Amount,
 										orderItem.Price,
-										orderItem.Product.ProductImages.First(pi => pi.MainImage).ImageSource));
+										orderItem.Product.ProductImages.First(pi => pi.MainImage).Image));
 				total += orderItem.Price;
 			}
 			var customer = dbRecord.Customer;

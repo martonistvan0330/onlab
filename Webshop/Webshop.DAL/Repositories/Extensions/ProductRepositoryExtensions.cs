@@ -119,9 +119,9 @@ namespace Webshop.DAL.Repositories.Extensions
             => products.Include(p => p.ProductImages);
 
         public static Models.Product GetProduct(this Product dbRecord)
-            => new Models.Product(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource);
+            => new Models.Product(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.Where(pi => pi.MainImage).Select(pi => pi.Image).FirstOrDefault());
 
         public static Models.ProductDetails GetProductDetails(this Product dbRecord)
-            => new Models.ProductDetails(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.First(pi => pi.MainImage).ImageSource, dbRecord.ProductImages.Where(pi => !pi.MainImage).Select(pi => pi.ImageSource).ToList());
+            => new Models.ProductDetails(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.Where(pi => pi.MainImage).Select(pi => pi.Image).FirstOrDefault(), dbRecord.ProductImages.Where(pi => !pi.MainImage).Select(pi => pi.Image).ToList());
     }
 }

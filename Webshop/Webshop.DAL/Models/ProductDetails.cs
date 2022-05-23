@@ -5,18 +5,18 @@
         public readonly int Id;
         public readonly string Name;
         public readonly double Price;
-        public readonly string MainImageSource;
-        public readonly List<string> ImageSources;
+        public readonly byte[] MainImage;
+        public readonly List<byte[]> Images;
 
         public ProductDetails() { }
 
-        public ProductDetails(int id, string name, double price, string mainImageSource, List<string> imageSources)
+        public ProductDetails(int id, string name, double price, byte[] mainImage, List<byte[]> images)
         {
             Id = id;
             Name = name;
             Price = price;
-            MainImageSource = mainImageSource;
-            ImageSources = imageSources;
+            MainImage = mainImage;
+            Images = images;
         }
     }
 }

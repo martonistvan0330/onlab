@@ -12,6 +12,6 @@ namespace Webshop.Web.Shared.Models
         public string SizeName { get; set; }
         public int Amount { get; set; }
         public double Price { get; set; }
-        public string ImageSource { get; set; }
+        public byte[] Image { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Webshop.BL;
-using Webshop.DAL.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Webshop.Web.Server.Models;
 
 namespace Webshop.Web.Server.Controllers
 {
@@ -8,13 +8,27 @@ namespace Webshop.Web.Server.Controllers
     [ApiController]
     public class UserController : Controller
     {
-        private readonly UserManager userManager;
-        public UserController(UserManager userManager)
+        private readonly UserManager<ApplicationUser> userManager;
+        public UserController(UserManager<ApplicationUser> userManager)
         {
             this.userManager = userManager;
         }
 
-        [HttpGet]
+        [HttpGet("isadmin")]
+        public async Task<ActionResult<bool>> IsAdmin([FromQuery] string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                if (await userManager.IsInRoleAsync(user, "admin"))
+                {
+                    return Ok(true);
+                }
+            }
+            return Ok(false);
+        }
+
+        /*[HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<string>> Login([FromBody] Login login)
@@ -50,6 +64,6 @@ namespace Webshop.Web.Server.Controllers
                     return Conflict();
                 }
             }
-        }
+        }*/
     }
 }

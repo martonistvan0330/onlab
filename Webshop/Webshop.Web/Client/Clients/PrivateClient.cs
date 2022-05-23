@@ -14,6 +14,11 @@ namespace Webshop.Web.Client.Clients
             Client = httpClient;
         }
 
+        public async Task<bool> IsAdmin(string userId)
+        {
+            return await Client.GetFromJsonAsync<bool>($"api/user/isadmin?userid={userId}");
+        }
+
         public async Task<Product[]?> GetProducts()
         {
             return await Client.GetFromJsonAsync<Product[]>("api/product/main");
@@ -97,6 +102,12 @@ namespace Webshop.Web.Client.Clients
         public async Task<OrderDetails?> GetOrderDetails(int orderId, string userId)
         {
             return await Client.GetFromJsonAsync<OrderDetails>($"api/order/{orderId}?userid={userId}");
+        }
+
+        public async Task<bool> AddProductImage(MultipartFormDataContent content, int productId, string userId)
+        {
+            var result = await Client.PostAsync($"api/admin/products/{productId}/addimage?userid={userId}", content);
+            return result.IsSuccessStatusCode;
         }
     }
 }

@@ -12,15 +12,15 @@ namespace Webshop.DAL.Models
 		public readonly string SizeName;
 		public readonly int Amount;
 		public readonly double Price;
-		public readonly string ImageSource;
+		public readonly byte[] Image;
 
-		public OrderItem(string productName, string sizeName, int amount, double price, string imageSource)
+		public OrderItem(string productName, string sizeName, int amount, double price, byte[] image)
 		{
 			ProductName = productName;
 			SizeName = sizeName;
 			Amount = amount;
 			Price = price;
-			ImageSource = imageSource;
+			Image = image;
 		}
 	}
 }

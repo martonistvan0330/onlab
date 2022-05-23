@@ -93,7 +93,8 @@
 	(
 		ID int identity primary key,
 		ProductID int references Product(ID),
-		ImageSource nvarchar(100),
+		FileName nvarchar(100),
+		Image image,
 		MainImage bit,
 	)
 
@@ -289,26 +290,6 @@
 	insert into Product (id, Name, Price, VATID, CategoryID) values (16, 'Bandana 2', 1200, 4, 19);
 	insert into Product (id, Name, Price, VATID, CategoryID) values (17, 'Hat 1', 3000, 4, 21);
 	SET IDENTITY_INSERT Product OFF
-
-	SET IDENTITY_INSERT ProductImage ON
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (1, 1, 'images/shirt.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (2, 2, 'images/shirt.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (3, 3, 'images/long_sleeve.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (4, 4, 'images/jersey.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (5, 5, 'images/crewneck.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (6, 6, 'images/hoodie.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (7, 7, 'images/hoodie.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (8, 8, 'images/hoodie.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (9, 9, 'images/sweater.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (10, 10, 'images/shorts.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (11, 11, 'images/shorts.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (12, 12, 'images/leggings.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (13, 13, 'images/jeans.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (14, 14, 'images/sunglasses.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (15, 15, 'images/bandana.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (16, 16, 'images/bandana.png', 1);
-	insert into ProductImage (id, ProductID, ImageSource, MainImage) values (17, 17, 'images/hat.png', 1);
-	SET IDENTITY_INSERT ProductImage OFF
 
 	SET IDENTITY_INSERT ProductStock ON
 	insert into ProductStock (id, ProductID, SizeID, Stock) values (1, 1, 1, 3);

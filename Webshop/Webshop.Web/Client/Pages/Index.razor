@@ -26,7 +26,7 @@
                 <div class="col mb-4">
                     <div class="card text-white bg-dark border-dark" style="width: 18rem;">
                         <NavLink href="@productLink">
-                            <img class="card-img-top bg-light" src="@product.ImageSource">
+                            <img class="card-img-top bg-light" src="@ConvertImageToDisplay(product.Image)">
                         </NavLink>
                         <div class="card-body">
                             <NavLink href="@productLink">
@@ -51,4 +51,15 @@
     {
         products = await client.GetMainPageProducts();
     }
+
+    private string ConvertImageToDisplay(byte[] image)
+	{
+		if (image != null)
+		{
+			var base64 = Convert.ToBase64String(image);
+			var fs = string.Format("data:image/png;base64,{0}", base64);
+			return fs;
+		}
+		return "";
+	}
 }
