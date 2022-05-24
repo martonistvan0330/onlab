@@ -12,45 +12,50 @@
 
 <h3>Order</h3>
 
-@if (order == null)
-{
-	<p><em>Loading...</em></p>
-}
-else
-{
-	<h4>Email: @order.Email</h4>
-	<h4>Shipping Method: @order.ShippingMethod</h4>
-	<h4>Shipping Address:</h4>
-	<AddressInfoView AddressInfo=@order.ShippingAddressInfo></AddressInfoView>
-	<h4>Payment Method: @order.PaymentMethod</h4>
-	<h4>Billing Address:</h4>
-	<AddressInfoView AddressInfo=@order.BillingAddressInfo></AddressInfoView>
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Image</th>
-				<th>Name</th>
-				<th>Size</th>
-				<th>Amount</th>
-				<th>Price</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var orderItem in order.OrderItems)
-			{
-				<tr>
-					<td><img class="img-thumbnail" src="@ConvertImageToDisplay(orderItem.Image)" width="200"></td>
-					<td>@orderItem.ProductName</td>
-					<td>@orderItem.SizeName</td>
-					<td>@orderItem.Amount</td>
-					<td>@orderItem.Price</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-
-	<h4>Total: @order.Total</h4>
-}
+<div class="page">
+	@if (order == null)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<div class="order-details">
+			<h4>Email: @order.Email</h4>
+			<h4>Shipping Method: @order.ShippingMethod</h4>
+			<h4>Shipping Address:</h4>
+			<AddressInfoView AddressInfo=@order.ShippingAddressInfo></AddressInfoView>
+			<h4>Payment Method: @order.PaymentMethod</h4>
+			<h4>Billing Address:</h4>
+			<AddressInfoView AddressInfo=@order.BillingAddressInfo></AddressInfoView>
+		</div>
+		<div class="order-items">
+			<table class="table table-dark table-striped">
+				<thead>
+					<tr>
+						<th>Image</th>
+						<th>Name</th>
+						<th>Size</th>
+						<th>Amount</th>
+						<th>Price</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var orderItem in order.OrderItems)
+					{
+						<tr>
+							<td><img class="img-thumbnail" src="@ConvertImageToDisplay(orderItem.Image)" width="200"></td>
+							<td>@orderItem.ProductName</td>
+							<td>@orderItem.SizeName</td>
+							<td>@orderItem.Amount</td>
+							<td>@orderItem.Price</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+			<h4>Total: @order.Total</h4>
+		</div>
+	}
+</div>
 
 @code {
 	private OrderDetails order;
