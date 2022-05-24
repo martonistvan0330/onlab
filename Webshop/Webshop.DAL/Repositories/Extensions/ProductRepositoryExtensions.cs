@@ -18,7 +18,7 @@ namespace Webshop.DAL.Repositories.Extensions
         public static IQueryable<Product> FilterByPrice(this IQueryable<Product> products, double minPrice, double maxPrice)
         {
             var filteredProducts = products
-                                    .Where(p => p.Price > minPrice);
+                                    .Where(p => p.Price >= minPrice);
             if (maxPrice > 0)
             {
                 filteredProducts = filteredProducts
@@ -122,6 +122,6 @@ namespace Webshop.DAL.Repositories.Extensions
             => new Models.Product(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.Where(pi => pi.MainImage).Select(pi => pi.Image).FirstOrDefault());
 
         public static Models.ProductDetails GetProductDetails(this Product dbRecord)
-            => new Models.ProductDetails(dbRecord.Id, dbRecord.Name, dbRecord.Price, dbRecord.ProductImages.Where(pi => pi.MainImage).Select(pi => pi.Image).FirstOrDefault(), dbRecord.ProductImages.Where(pi => !pi.MainImage).Select(pi => pi.Image).ToList());
+            => new Models.ProductDetails(dbRecord.Id, dbRecord.Name, dbRecord.CategoryId, dbRecord.Price, dbRecord.ProductImages.Where(pi => pi.MainImage).Select(pi => pi.Image).FirstOrDefault(), dbRecord.ProductImages.Where(pi => !pi.MainImage).Select(pi => pi.Image).ToList());
     }
 }

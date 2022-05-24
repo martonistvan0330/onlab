@@ -6,7 +6,7 @@ using Webshop.DAL.Repositories.Interfaces;
 
 namespace Webshop.DAL.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : IProductRepository, IAdminProductRepository
     {
         public const int PAGES_PER_PRODUCT = 6;
 
@@ -59,6 +59,35 @@ namespace Webshop.DAL.Repositories
             return await dbContext.Product
                             .FindByName(productName)
                             .GetProductIdOrNull();
+        }
+
+        public async Task<int> AddProduct(NewProduct newProduct)
+        {
+            var product = new EF.Product()
+            {
+                Name = newProduct.Name,
+                Price = newProduct.Price,
+                CategoryId = newProduct.CategoryId,
+                VatId = 4,
+            };
+
+            dbContext.Product.Add(product);
+            await dbContext.SaveChangesAsync();
+            return product.Id;
+        }
+
+        public async Task<int> UpdateProduct(int productId, NewProduct newProduct)
+        {
+            var dbProduct = await dbContext.Product.FindById(productId).SingleOrDefaultAsync();
+            if (dbProduct != null)
+            {
+                dbProduct.Name = newProduct.Name;
+                dbProduct.Price = newProduct.Price;
+                dbProduct.CategoryId = newProduct.CategoryId;
+                dbContext.Product.Update(dbProduct);
+                await dbContext.SaveChangesAsync();
+            }
+            return productId;
         }
     }
 }

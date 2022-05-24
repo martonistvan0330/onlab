@@ -12,6 +12,9 @@ namespace Webshop.BL
             this.categoryRepository = categoryRepository;
         }
 
+        public async Task<IReadOnlyCollection<Category>> GetCategories()
+            => await categoryRepository.ListCategories();
+
         public async Task<Category?> GetCategory(int id)
             => await categoryRepository.GetByIdOrNull(id);
 

@@ -27,6 +27,8 @@ namespace Webshop.Web.Client.Clients
             }
             return null;
         }
+        public async Task<Category[]?> GetCategories()
+           => await Client.GetFromJsonAsync<Category[]>("api/category");
 
         public async Task<Category[]?> GetMainCategories()
             => await Client.GetFromJsonAsync<Category[]>("api/category/main");

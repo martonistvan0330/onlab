@@ -1,0 +1,118 @@
+﻿@page "/admin/products"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Components
+@using Webshop.Web.Client.Models
+@using Webshop.Web.Shared.Models
+@using Webshop.Web.Client.Clients
+@using System.Net.Http.Json
+
+@attribute [Authorize]
+
+@inject PublicClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
+
+<div class="page">
+	<h1>Products</h1>
+	<AdminView ErrorText="You are not an admin">
+		<main>
+			@if (products == null)
+			{
+				<p><em>Loading...</em></p>
+			}
+			else if (products.Count() <= 0)
+			{
+				<p>No products found</p>
+			}
+			else
+			{
+				<div class="container">
+					<div class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3">
+					@foreach (var product in products)
+					{
+						string cartLink = $"/addtocart?productid={product.Id}&amount=1&sizeid=3";
+						string productLink = $"/admin/products/{product.Id}";
+
+						<div class="col mb-4">
+							<div class="card text-white bg-dark border-dark" style="width: 18rem;">
+								<NavLink href="@productLink">
+									<img class="card-img-top bg-light" src="@ConvertImageToDisplay(product.Image)">
+								</NavLink>
+								<div class="card-body">
+									<NavLink href="@productLink">
+										<h5 class="card-title">@product.Name</h5>
+										<p class="card-text">@product.Price Ft</p>
+									</NavLink>
+									<AddToCart ProductId=@product.Id></AddToCart>
+								</div>
+							</div>
+						</div>
+					}
+					</div>
+
+					<ul class="pagination justify-content-center">
+						@if (Page > 1)
+						{
+							int previousPage = Page - 1;
+							string previousLink = $"admin/products?page={previousPage}";
+							<li class="page-item"><a class="page-link" href=@previousLink>Previous</a></li>
+							<li class="page-item"><a class="page-link" href=@previousLink>@previousPage</a></li>
+						}
+						@if (pageCount == 1)
+						{
+							string link = $"admin/products?page={Page}";
+							<li class="page-item disabled"><span class="page-link">Previous</span></li>
+							<li class="page-item"><a class="page-link" href=@link>@Page</a></li>
+							<li class="page-item disabled"><span class="page-link">Next</span></li>
+						}
+						else
+						{
+							string link = $"admin/products?page={Page}";
+							<li class="page-item"><a class="page-link" href=@link>@Page</a></li>
+						}
+						@if (pageCount > Page)
+						{
+							int nextPage = Page + 1;
+							string nextLink = $"admin/products?page={nextPage}";
+							<li class="page-item"><a class="page-link" href=@nextLink>@nextPage</a></li>
+							<li class="page-item"><a class="page-link" href=@nextLink>Next</a></li>
+						}
+					</ul>
+				</div>
+			}
+		</main>
+	</AdminView>
+</div>
+
+@code {
+    [Parameter]
+	[SupplyParameterFromQuery]
+	public int Page { get; set; } = 1;
+
+	private int pageCount;
+	private Product[]? products;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (Page <= 0)
+		{
+			Page = 1;
+		}
+		var result = await client.GetFilteredProducts(0, Page);
+		products = result.Products;
+		pageCount = result.PageCount;
+	}
+
+	private string ConvertImageToDisplay(byte[] image)
+	{
+		if (image != null)
+		{
+			var base64 = Convert.ToBase64String(image);
+			var fs = string.Format("data:image/png;base64,{0}", base64);
+			return fs;
+		}
+		return "";
+	}
+}

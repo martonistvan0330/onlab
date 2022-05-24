@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace Webshop.Web.Shared.Models
@@ -15,7 +16,8 @@ namespace Webshop.Web.Shared.Models
         [Range(1000, 200000)]
         public double Price { get; set; } = 1000;
         [Required]
-        public MultipartFormDataContent Image { get; set; }
+        [Range(1, int.MaxValue)]
+        public int CategoryId { get; set; }
         [Required]
         [Range(0, 100)]
         public int XS { get; set; } = 0;
@@ -34,5 +36,20 @@ namespace Webshop.Web.Shared.Models
         [Required]
         [Range(0, 100)]
         public int XXL { get; set; } = 0;
+
+        public JsonObject ToJson()
+        {
+            var json = new JsonObject();
+            json.Add(nameof(Name), Name);
+            json.Add(nameof(Price), Price);
+            json.Add(nameof(CategoryId), CategoryId);
+            json.Add(nameof(XS), XS);
+            json.Add(nameof(S), S);
+            json.Add(nameof(M), M);
+            json.Add(nameof(L), L);
+            json.Add(nameof(XL), XL);
+            json.Add(nameof(XXL), XXL);
+            return json;
+        }
     }
 }

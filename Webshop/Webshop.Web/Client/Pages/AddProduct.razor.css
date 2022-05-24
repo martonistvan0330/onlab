@@ -1,3 +1,7 @@
 ﻿.page {
     max-width: 500px;
 }
+
+.category {
+    min-width: 300px;
+}

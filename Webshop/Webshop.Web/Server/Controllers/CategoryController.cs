@@ -11,6 +11,13 @@ namespace Webshop.Web.Server.Controllers
         private readonly CategoryManager categoryManager;
         public CategoryController(CategoryManager categoryManager) => this.categoryManager = categoryManager;
 
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<ActionResult<IReadOnlyCollection<Category>>> GetCategories()
+        {
+            return Ok(await categoryManager.GetCategories());
+        }
+
         [HttpGet("{categoryId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]

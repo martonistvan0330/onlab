@@ -56,7 +56,7 @@ namespace Webshop.DAL.Repositories.Extensions
                             .SingleOrDefaultAsync();
         }
 
-        public async static Task<int?> GetStock(this IQueryable<ProductStock> productstocks)
+        public async static Task<int> GetStock(this IQueryable<ProductStock> productstocks)
         {
             return await productstocks
                             .Select(ps => ps.Stock)
