@@ -2,9 +2,8 @@
 {
     public class Product
     {
-        public Product(string name)
+        public Product()
         {
-            Name = name;
             OrderItems = new HashSet<OrderItem>();
             CartItems = new HashSet<CartItem>();
             ProductStocks = new HashSet<ProductStock>();

@@ -1,0 +1,89 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<select class="form-select" aria-label="size select" @onchange="SizeChanged">
+							@if (CartItem.SizeId == 1)
+							{
+								<option selected value="1">XS</option>
+							}
+							else
+							{
+								<option value="1">XS</option>
+							}
+							@if (CartItem.SizeId == 2)
+							{
+								<option selected value="2">S</option>
+							}
+							else
+							{
+								<option value="2">S</option>
+							}
+							@if (CartItem.SizeId == 3)
+							{
+								<option selected value="3">M</option>
+							}
+							else
+							{
+								<option value="3">M</option>
+							}
+							@if (CartItem.SizeId == 4)
+							{
+								<option selected value="4">L</option>
+							}
+							else
+							{
+								<option value="4">L</option>
+							}
+							@if (CartItem.SizeId == 5)
+							{
+								<option selected value="5">XL</option>
+							}
+							else
+							{
+								<option value="5">XL</option>
+							}
+							@if (CartItem.SizeId == 6)
+							{
+								<option selected value="6">XXL</option>
+							}
+							else
+							{
+								<option value="6">XXL</option>
+							}
+						</select>
+
+@code {
+    [Parameter]
+    public CartItem CartItem { get; set; }
+
+	private string userId;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == "sub")?.Value;
+	}
+
+	private async Task SizeChanged(ChangeEventArgs e)
+	{
+		var previousValue = CartItem.SizeId;
+		CartItem.SizeId = int.Parse(e.Value.ToString());
+		try
+		{
+			var success = await client.UpdateCartItem(CartItem, userId);
+			if (!success)
+			{
+				CartItem.SizeId = previousValue;
+			}
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+}

@@ -20,6 +20,16 @@ namespace Webshop.DAL.Repositories.Extensions
             return productStocks.Where(ps => ps.Product.Id == productId);
         }
 
+        public static IQueryable<ProductStock> FilterByProductId(this IQueryable<ProductStock> productStocks, int productId)
+        {
+            return productStocks.Where(ps => ps.Product.Id == productId);
+        }
+
+        public static IQueryable<ProductStock> FilterByProductIdAndSize(this IQueryable<ProductStock> productStocks, int productId, int sizeId)
+		{
+            return productStocks.FilterByProductId(productId).FilterBySize(sizeId);
+		}
+
         public static IQueryable<ProductStock> WithProduct(this IQueryable<ProductStock> productStocks)
             => productStocks.Include(ps => ps.Product);
 
@@ -46,7 +56,7 @@ namespace Webshop.DAL.Repositories.Extensions
                             .SingleOrDefaultAsync();
         }
 
-        public async static Task<int?> GetStock(this IQueryable<ProductStock> productstocks)
+        public async static Task<int> GetStock(this IQueryable<ProductStock> productstocks)
         {
             return await productstocks
                             .Select(ps => ps.Stock)

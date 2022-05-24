@@ -58,6 +58,11 @@ namespace Webshop.BL
             return await customerRepository.ListCustomers(userId.Value);
         }*/
 
+        public async Task<Customer> GetById(int customerId, string userId)
+        {
+            return await customerRepository.GetById(customerId, userId);
+        }
+
         public async Task<(bool, int)> TryAddCustomerWithAll(Customer customer, string userId)
         {
             using (var transaction = new TransactionScope(
@@ -159,14 +164,7 @@ namespace Webshop.BL
 
         private async Task<(bool, int)> TryAddCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string userId)
         {
-            if (!(await customerRepository.ExistsByName(customer.Name, userId)))
-            {
-                return await customerRepository.AddCustomer(customer, shippingInfoId, paymentInfoId, userId);
-            }
-            else
-            {
-                return (false, -1);
-            }
+            return await customerRepository.AddCustomer(customer, shippingInfoId, paymentInfoId, userId);
         }
 
         /*private async Task<bool> TryUpdateCustomer(Customer customer, int shippingInfoId, int paymentInfoId, string oldName)

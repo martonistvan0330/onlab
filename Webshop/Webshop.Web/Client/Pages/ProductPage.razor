@@ -1,0 +1,98 @@
+﻿@page "/product/{productId:int}"
+
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+
+@inject PublicClient client
+@inject NavigationManager NavManager
+
+<div class="page">
+	@if (product == null)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<div class="images">
+			<div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="carousel">
+				<div class="carousel-indicators">
+					<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+					@for (int i = 1; i <= product.Images.Count; i++)
+					{
+						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" aria-label="Slide"></button>	
+					}
+				</div>
+				<div class="carousel-inner">
+					<div class="carousel-item active">
+						<img src="@ConvertImageToDisplay(product.MainImage)" class="d-block w-100 bg-light">
+					</div>
+					@foreach (var image in product.Images)
+					{
+						<div class="carousel-item">
+							<img src="@ConvertImageToDisplay(image)" class="d-block w-100 bg-light">
+						</div>
+					}
+				</div>
+				<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Previous</span>
+				</button>
+				<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Next</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="details">
+			<h1>@product.Name</h1>
+			<h2>@product.Price</h2>
+			<select class="form-select size" aria-label="size select" @onchange="SizeChanged">
+				<option value="1">XS</option>
+				<option value="2">S</option>
+				<option selected value="3">M</option>
+				<option value="4">L</option>
+				<option value="5">XL</option>
+				<option value="6">XXL</option>
+			</select>
+
+			<input type="number" class="form-control amount" required min="1" max="10" @bind="amount"></input>
+
+			<AddToCart ProductId=@ProductId Amount=@amount SizeId=@sizeId></AddToCart>
+		</div>
+	}
+</div>
+
+@code {
+	[Parameter]
+	public int ProductId { get; set; }
+
+	private ProductDetails product;
+
+	private int sizeId;
+
+	private int amount;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		sizeId = 3;
+		amount = 1;
+		product = await client.GetProduct(ProductId);
+	}
+
+	private async Task SizeChanged(ChangeEventArgs e)
+	{
+		sizeId = int.Parse(e.Value.ToString());
+	}
+
+	private string ConvertImageToDisplay(byte[] image)
+	{
+		if (image != null)
+		{
+			var base64 = Convert.ToBase64String(image);
+			var fs = string.Format("data:image/png;base64,{0}", base64);
+			return fs;
+		}
+		return "";
+	}
+}

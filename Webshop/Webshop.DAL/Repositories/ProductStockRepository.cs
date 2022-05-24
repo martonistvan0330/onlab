@@ -1,10 +1,11 @@
-﻿using Webshop.DAL.EF;
+﻿using Microsoft.EntityFrameworkCore;
+using Webshop.DAL.EF;
 using Webshop.DAL.Repositories.Extensions;
 using Webshop.DAL.Repositories.Interfaces;
 
 namespace Webshop.DAL.Repositories
 {
-    public class ProductStockRepository : IProductStockRepository
+    public class ProductStockRepository : IProductStockRepository, IAdminProductStockRepository
     {
         private readonly WebshopDbContext dbContext;
 
@@ -30,7 +31,7 @@ namespace Webshop.DAL.Repositories
                 .GetStocks();
         }
 
-        public async Task<int?> GetStockByProductSizeOrNull(int productId, int sizeId)
+        public async Task<int> GetStockByProductSizeOrNull(int productId, int sizeId)
         {
             return await dbContext.ProductStock
                 .WithProduct()
@@ -89,6 +90,65 @@ namespace Webshop.DAL.Repositories
             {
                 return (false, -1);
             }
+        }
+
+		public async Task<bool> AddStock(IReadOnlyCollection<Models.ProductStockWithId> productStocks)
+		{
+			foreach (var productStock in productStocks)
+			{
+                var dbRecord = await dbContext.ProductStock.FilterByProductIdAndSize(productStock.ProductId, productStock.SizeId).GetProductStockOrNull();
+                if (dbRecord == null)
+				{
+                    dbRecord = new ProductStock
+                    {
+                        ProductId = productStock.ProductId,
+                        SizeId = productStock.SizeId,
+                        Stock = productStock.Stock,
+                    };
+                    dbContext.ProductStock.Add(dbRecord);
+				}
+                else
+				{
+                    dbRecord.Stock += productStock.Stock;
+                    dbContext.ProductStock.Update(dbRecord);
+				}
+            }
+            try
+            {
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> AddNewStock(int productId, int sizeId, int amount)
+        {
+            var productStock = new ProductStock()
+            {
+                ProductId = productId,
+                SizeId = sizeId,
+                Stock = amount,
+            };
+
+            dbContext.ProductStock.Add(productStock);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RefreshStock(int productId, int sizeId, int amount)
+        {
+            var dbProductStock = await dbContext.ProductStock.FilterByProductId(productId).FilterBySize(sizeId).SingleOrDefaultAsync();
+
+            if (dbProductStock != null)
+            {
+                dbProductStock.Stock = amount;
+                dbContext.ProductStock.Update(dbProductStock);
+                await dbContext.SaveChangesAsync();
+            }
+            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Webshop.DAL.EF;
+﻿using Microsoft.EntityFrameworkCore;
+using Webshop.DAL.EF;
 using Webshop.DAL.Repositories.Extensions;
 using Webshop.DAL.Repositories.Interfaces;
 
@@ -17,6 +18,14 @@ namespace Webshop.DAL.Repositories
         {
             return await dbContext.Cart
                             .GetCartByUserIdOrNull(userId);
+        }
+
+        public async Task<double> GetTotalByUser(string userId)
+        {
+            return await dbContext.Cart.WithCartItems()
+                                       .FindByUserId(userId)
+                                       .GetTotal()
+                                       .SingleOrDefaultAsync();
         }
 
         public async Task<Models.Cart> CreateNewCart(string userId)

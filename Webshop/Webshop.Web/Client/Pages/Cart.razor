@@ -16,16 +16,20 @@
 {
 	<p><em>Loading...</em></p>
 }
+else if (cartItems.Count() <= 0)
+{
+	<p><em>Cart is empty</em></p>
+} 
 else
 {
-	<table class="table">
+	<table class="table table-dark table-striped">
 		<thead>
 			<tr>
-				<th>Name</th>
-				<th>Size</th>
-				<th>Amount</th>
-				<th>Price</th>
-				<th></th>
+				<th scope="col" class="name">Name</th>
+				<th scope="col" class="size">Size</th>
+				<th scope="col" class="amount">Amount</th>
+				<th scope="col" class="price">Price</th>
+				<th scope="col" class="delete"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -34,56 +38,7 @@ else
 				<tr>
 					<td>@cartItem.ProductName</td>
 					<td>
-						<select class="form-select" aria-label="size select" @onchange="(args) => SizeChanged(args, cartItem)">
-							@if (cartItem.SizeId == 1)
-							{
-								<option selected value="1">XS</option>
-							}
-							else
-							{
-								<option value="1">XS</option>
-							}
-							@if (cartItem.SizeId == 2)
-							{
-								<option selected value="2">S</option>
-							}
-							else
-							{
-								<option value="2">S</option>
-							}
-							@if (cartItem.SizeId == 3)
-							{
-								<option selected value="3">M</option>
-							}
-							else
-							{
-								<option value="3">M</option>
-							}
-							@if (cartItem.SizeId == 4)
-							{
-								<option selected value="4">L</option>
-							}
-							else
-							{
-								<option value="4">L</option>
-							}
-							@if (cartItem.SizeId == 5)
-							{
-								<option selected value="5">XL</option>
-							}
-							else
-							{
-								<option value="5">XL</option>
-							}
-							@if (cartItem.SizeId == 6)
-							{
-								<option selected value="6">XXL</option>
-							}
-							else
-							{
-								<option value="6">XXL</option>
-							}
-						</select>
+						<SizeChooser CartItem=@cartItem></SizeChooser>
 					</td>
 					<td>
 						<button type="button" class="btn btn-danger btn-sm" @onclick="(args) => AmountChanged(args, cartItem, -1)">-</button>
@@ -92,7 +47,12 @@ else
 					</td>
 					<td>@cartItem.Price</td>
 					<td>
-						<button type="button" class="btn btn-danger btn-sm" @onclick="(args) => DeleteCartItem(args, cartItem)">Delete</button>
+						<button type="button" class="btn btn-danger btn-sm" @onclick="(args) => DeleteCartItem(args, cartItem)">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+								<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+								<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+							</svg>
+						</button>
 					</td>
 				</tr>
 			}
@@ -101,7 +61,7 @@ else
 
 	<h4>Total: @total</h4>
 
-	<NavLink class="btn btn-primary btn-lg" href="checkout">Proceed To Checkout</NavLink>
+	<NavLink class="btn btn-success btn-lg" href="checkout">Proceed To Checkout</NavLink>
 }
 
 @code {
@@ -124,7 +84,7 @@ else
 		{
 			exception.Redirect();
 		}
-		CalculateTotal();
+		total = await CalculateTotal();
 	}
 
 	private async Task SizeChanged(ChangeEventArgs e, CartItem cartItem)
@@ -164,7 +124,7 @@ else
 					cartItem.Amount = previousValue;
 				}
 				cartItem.Price = cartItem.Amount * unitPrice;
-				CalculateTotal();
+				total = await CalculateTotal();
 			}
 			catch (AccessTokenNotAvailableException exception)
 			{
@@ -181,7 +141,7 @@ else
 			if (success)
 			{
 				cartItems = cartItems.Where(ci => ci.Id != cartItem.Id).ToArray();
-				CalculateTotal();
+				total = await CalculateTotal();
 			}
 		}
 		catch (AccessTokenNotAvailableException exception)
@@ -190,13 +150,14 @@ else
 		}
 	}
 
-	private void CalculateTotal()
+	private async Task<double> CalculateTotal()
 	{
-		double newTotal = 0;
-		foreach (var cartItem in cartItems)
-		{
-			newTotal += cartItem.Price;
-		}
-		total = newTotal;
+		return await Task.Run(() => { double newTotal = 0;
+			foreach (var cartItem in cartItems)
+			{
+				newTotal += cartItem.Price;
+			}
+			return newTotal;
+		});
 	}
 }

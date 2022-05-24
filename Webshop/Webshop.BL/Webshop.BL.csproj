@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Stripe.net" Version="39.108.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Webshop.DAL\Webshop.DAL.csproj" />
   </ItemGroup>
 

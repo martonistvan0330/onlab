@@ -1,0 +1,35 @@
+﻿.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+.images {
+    width: 600px;
+}
+
+.details {
+    width: 300px;
+    margin-left: 20px;
+}
+
+.size {
+    margin-bottom: 10px;
+}
+
+.amount {
+    margin-bottom: 10px;
+}
+
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .images {
+        min-width: 250px;
+        position: sticky;
+        top: 0;
+    }
+}

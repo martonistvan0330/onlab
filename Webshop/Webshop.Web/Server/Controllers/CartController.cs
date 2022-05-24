@@ -18,7 +18,6 @@ namespace Webshop.Web.Server.Controllers
 
         [HttpGet]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
         public async Task<IEnumerable<CartItem>> GetCartItems([FromQuery] string userId)
         {
             return await cartManager.ListCartItems(userId);
@@ -26,7 +25,6 @@ namespace Webshop.Web.Server.Controllers
 
         [HttpPut]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
         [ProducesResponseType(409)]
         public async Task<ActionResult> UpdateCartItem([FromBody] UpdateCartItem cartItem, [FromQuery] string userId)
         {
@@ -42,23 +40,32 @@ namespace Webshop.Web.Server.Controllers
 
         [HttpPost]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(409)]
         public async Task<ActionResult> AddCartItem([FromBody] NewCartItem cartItem, [FromQuery] string userId)
         {
-            if (await cartManager.TryAddCartItem(cartItem, userId))
-            {
-                return Ok();
+            if (cartItem.Amount <= 0)
+			{
+                return BadRequest();
+			}
+            try {
+                if (await cartManager.TryAddCartItem(cartItem, userId))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Conflict("something went wrong");
+                }
             }
-            else
-            {
-                return Conflict();
+            catch (Exception e)
+            { 
+                return Conflict(e.Message);
             }
         }
 
         [HttpDelete("{cartItemId}")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
         [ProducesResponseType(409)]
         public async Task<ActionResult> RemoveCartItem([FromRoute] int cartItemId, [FromQuery] string userId)
         {

@@ -47,6 +47,11 @@ namespace Webshop.BL
             }
         }
 
+        public async Task<double> GetTotal(string userId)
+        {
+            return await cartRepository.GetTotalByUser(userId);
+        }
+
         public async Task<bool> TryAddCartItem(NewCartItem cartItem, string userId)
         {
             using (var transaction = new TransactionScope(
@@ -69,6 +74,10 @@ namespace Webshop.BL
                         transaction.Complete();
                         return true;
                     }
+                    else
+					{
+                        throw new Exception("not enough items in stock");
+					}
                 }
             }
             return false;

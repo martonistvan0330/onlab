@@ -2,18 +2,23 @@
 {
     public class ProductDetails
     {
+        public readonly int Id;
         public readonly string Name;
         public readonly double Price;
-        public readonly int VatPercentage;
-        public readonly string Description;
+        public readonly int CategoryId;
+        public readonly byte[] MainImage;
+        public readonly List<byte[]> Images;
 
         public ProductDetails() { }
 
-        public ProductDetails(string name, double price, int vatPercentage)
+        public ProductDetails(int id, string name, int categoryId, double price, byte[] mainImage, List<byte[]> images)
         {
+            Id = id;
             Name = name;
+            CategoryId = categoryId;
             Price = price;
-            VatPercentage = vatPercentage;
+            MainImage = mainImage;
+            Images = images;
         }
     }
 }

@@ -1,64 +1,204 @@
 ﻿@page "/products"
 
+@using Webshop.Web.Client.Models
 @using Webshop.Web.Shared.Models
 @using Webshop.Web.Client.Clients
 @using System.Net.Http.Json
 
 @inject PublicClient client
+@inject NavigationManager NavManager
 
-<h3>Category @CategoryId</h3>
+<div class="page">
+	<aside>
+		@if (parentCategory != null)
+		{
+			<h3>@parentCategory?.Name</h3>
+		}
+		@if (subCategories != null)
+		{
+			<ul class="subcategories">
+			@foreach (var category in subCategories)
+			{
+				string link = $"/products?categoryid={@category.Id}";
+				<li><a href=@link>@category.Name</a></li>
+			}
+			</ul>
+		}
 
-@if (subCategories != null)
-{
-    <ul>
-    @foreach (var category in subCategories)
-    {
-        <li>(@category.Id) @category.Name</li>
-    }
-    </ul>
-}
+		<h5>Size</h5>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" id="size-XS" @bind-value=sizes.XS>
+			<label class="form-check-label" for="size-XS">XS</label>
+		</div>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" id="size-S" @bind-value=sizes.S>
+			<label class="form-check-label" for="size-S">S</label>
+		</div>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" id="size-M" @bind-value=sizes.M>
+			<label class="form-check-label" for="size-M">M</label>
+		</div>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" id="size-L" @bind-value=sizes.L>
+			<label class="form-check-label" for="size-L">L</label>
+		</div>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" id="size-XL" @bind-value=sizes.XL>
+			<label class="form-check-label" for="size-XL">XL</label>
+		</div>
+		<div class="form-check">
+			<input type="checkbox" class="form-check-input" id="size-XXL" @bind-value=sizes.XXL>
+			<label class="form-check-label" for="size-XXL">XXL</label>
+		</div>
 
-@if (products == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="container">
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3">
-    @foreach (var product in products)
-    {
-        string link = $"addtocart?productid={product.Id}&amount=1&sizeid=3";
+		<h5>Price</h5>
+		<label for="min-price" class="form-label">Min</label>
+		<input type="number" class="form-control price" id=min-price @bind=minPrice min="1000" max="@maxPrice" step="1000">
+		<label for="max-price" class="form-label">Max</label>
+		<input type="number" class="form-control price" id=max-price @bind=maxPrice min="@minPrice" max="200000" step="1000">
 
-        <div class="col mb-4">
-            <div class="card text-white bg-dark border-dark" style="width: 18rem;">
-                <NavLink href="counter">
-                    <img class="card-img-top bg-light" src="@product.ImageSource">
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">@product.Price Ft</p>
-                        <NavLink class="btn btn-primary" href="@link">Add to cart</NavLink>
-                    </div>
-                </NavLink>
-            </div>
-        </div>
-    }
-    </div>
-    </div>
-}
+		<button class="btn btn-primary" @onclick="(args) => Filter(args)">Filter</button>
+	</aside>
+	<main>
+		@if (products == null)
+		{
+			<p><em>Loading...</em></p>
+		}
+		else if (products.Count() <= 0)
+		{
+			<p>No products found</p>
+		}
+		else
+		{
+			<div class="container">
+				<div class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3">
+				@foreach (var product in products)
+				{
+					string cartLink = $"/addtocart?productid={product.Id}&amount=1&sizeid=3";
+					string productLink = $"/product/{product.Id}";
+
+					<div class="col mb-4">
+						<div class="card text-white bg-dark border-dark" style="width: 18rem;">
+							<NavLink href="@productLink">
+								<img class="card-img-top bg-light" src="@ConvertImageToDisplay(product.Image)">
+							</NavLink>
+							<div class="card-body">
+								<NavLink href="@productLink">
+									<h5 class="card-title">@product.Name</h5>
+									<p class="card-text">@product.Price Ft</p>
+								</NavLink>
+								<AddToCart ProductId=@product.Id></AddToCart>
+							</div>
+						</div>
+					</div>
+				}
+				</div>
+
+				<ul class="pagination justify-content-center">
+					@if (Page > 1)
+					{
+						int previousPage = Page - 1;
+						string previousLink = $"products?categoryid={CategoryId}&page={previousPage}";
+						<li class="page-item"><a class="page-link" href=@previousLink>Previous</a></li>
+						<li class="page-item"><a class="page-link" href=@previousLink>@previousPage</a></li>
+					}
+					@if (pageCount == 1)
+					{
+						string link = $"products?categoryid={CategoryId}&page={Page}";
+						<li class="page-item disabled"><span class="page-link">Previous</span></li>
+						<li class="page-item"><a class="page-link" href=@link>@Page</a></li>
+						<li class="page-item disabled"><span class="page-link">Next</span></li>
+					}
+					else
+					{
+						string link = $"products?categoryid={CategoryId}&page={Page}";
+						<li class="page-item"><a class="page-link" href=@link>@Page</a></li>
+					}
+					@if (pageCount > Page)
+					{
+						int nextPage = Page + 1;
+						string nextLink = $"products?categoryid={CategoryId}&page={nextPage}";
+						<li class="page-item"><a class="page-link" href=@nextLink>@nextPage</a></li>
+						<li class="page-item"><a class="page-link" href=@nextLink>Next</a></li>
+					}
+				</ul>
+			</div>
+		}
+	</main>
+</div>
 
 @code {
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public int CategoryId { get; set; }
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public int CategoryId { get; set; }
 
-    private Category[]? subCategories;
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public int Page { get; set; } = 1;
 
-    private Product[]? products;
+	private Category? parentCategory;
 
-    protected override async Task OnParametersSetAsync()
-    {
-        subCategories = await client.GetSubCategories(CategoryId);
-        products = await client.GetFilteredProducts(CategoryId);
-    }
+	private Category[]? subCategories;
+
+	private Sizes sizes = new();
+
+	private double minPrice = 1000;
+	private double maxPrice = 200000;
+
+	private Product[]? products;
+	private int pageCount;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (Page <= 0)
+		{
+			Page = 1;
+		}
+		parentCategory = await client.GetCategory(CategoryId);
+		if (parentCategory == null)
+		{
+			NavManager.NavigateTo("/error");
+		}
+		else
+		{
+			subCategories = await client.GetSubCategories(CategoryId);
+
+			string sizesString = CreateSizesString();
+			var result = await client.GetFilteredProducts(CategoryId, Page, minPrice, maxPrice, sizesString);
+			products = result.Products;
+			pageCount = result.PageCount;
+		}
+	}
+
+	private async Task Filter(MouseEventArgs args)
+	{
+		string sizesString = CreateSizesString();
+		var result = await client.GetFilteredProducts(CategoryId, Page, minPrice, maxPrice, sizesString);
+		products = result.Products;
+		pageCount = result.PageCount;
+	}
+
+	private string CreateSizesString()
+	{
+		string sizesString = "";
+		if (sizes.XS) sizesString += "XS,";
+		if (sizes.S) sizesString += "S,";
+		if (sizes.M) sizesString += "M,";
+		if (sizes.L) sizesString += "L,";
+		if (sizes.XL) sizesString += "XL,";
+		if (sizes.XXL) sizesString += "XXL,";
+		if (!string.IsNullOrEmpty(sizesString)) sizesString = sizesString.Remove(sizesString.Length - 1);
+		return sizesString;
+	}
+
+	private string ConvertImageToDisplay(byte[] image)
+	{
+		if (image != null)
+		{
+			var base64 = Convert.ToBase64String(image);
+			var fs = string.Format("data:image/png;base64,{0}", base64);
+			return fs;
+		}
+		return "";
+	}
 }

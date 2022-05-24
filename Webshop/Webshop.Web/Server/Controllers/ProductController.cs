@@ -20,27 +20,18 @@ namespace Webshop.Web.Server.Controllers
 
         [HttpGet("filter")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] int categoryId, [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 0, [FromQuery] string? sizes = null, [FromQuery] int page = 1)
+        public async Task<ActionResult<ProductsWithPageCount>> GetProducts([FromQuery] int categoryId, [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 0, [FromQuery] string? sizes = null, [FromQuery] int page = 1)
         {
             var products = await productManager.GetFilteredProducts(categoryId, minPrice, maxPrice, sizes, page);
-            
-            if (products.Count <= 0)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(products);
-            }
+            return Ok(products);
         }
 
-        [HttpGet]
+        [HttpGet("{productId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<ProductDetails>> GetProduct([FromQuery] string productName)
+        public async Task<ActionResult<ProductDetails>> GetProduct([FromRoute] int productId)
         {
-            var product = await productManager.GetProductDetailsOrNull(productName);
+            var product = await productManager.GetProductDetailsOrNull(productId);
 
             if (product == null)
             {

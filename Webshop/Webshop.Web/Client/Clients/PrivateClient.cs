@@ -14,6 +14,11 @@ namespace Webshop.Web.Client.Clients
             Client = httpClient;
         }
 
+        public async Task<bool> IsAdmin(string userId)
+        {
+            return await Client.GetFromJsonAsync<bool>($"api/user/isadmin?userid={userId}");
+        }
+
         public async Task<Product[]?> GetProducts()
         {
             return await Client.GetFromJsonAsync<Product[]>("api/product/main");
@@ -63,10 +68,67 @@ namespace Webshop.Web.Client.Clients
             return int.Parse(await result.Content.ReadAsStringAsync());
         }
 
-        public async Task<int> CreateOrder(string userId, int customerId)
+        public async Task<Order[]?> GetOrders(string userId)
+        {
+            return await Client.GetFromJsonAsync<Order[]>($"api/order?userid={userId}");
+        }
+
+        public async Task<(bool, int)> CreateOrder(string userId, int customerId)
         {
             var result = await Client.PostAsync($"api/order?userid={userId}&customerid={customerId}", null);
+            if (result.IsSuccessStatusCode)
+            {
+                return (true, int.Parse(await result.Content.ReadAsStringAsync()));
+            }
+            else 
+            {
+                return (false, -1);
+            }
+        }
+
+        public async Task<bool> CancelOrder(int orderId, string userId)
+        {
+            var result = await Client.PatchAsync($"api/order/{orderId}/cancel?userid={userId}", null);
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<OrderDetails?> GetOrderDetails(int orderId, string userId)
+        {
+            return await Client.GetFromJsonAsync<OrderDetails>($"api/order/{orderId}?userid={userId}");
+        }
+
+        public async Task<int> AddNewProduct(NewProduct product, string userId)
+        {
+            var jsonObject = product.ToJson();
+            var content = new StringContent(jsonObject.ToString(), Encoding.UTF8, "application/json");
+            var result = await Client.PostAsync($"api/admin/products/add?userid={userId}", content);
             return int.Parse(await result.Content.ReadAsStringAsync());
+        }
+
+        public async Task<int> UpdateProduct(NewProduct product, int productId, string userId)
+        {
+            var jsonObject = product.ToJson();
+            var content = new StringContent(jsonObject.ToString(), Encoding.UTF8, "application/json");
+            var result = await Client.PutAsync($"api/admin/products/{productId}/update?userid={userId}", content);
+            return int.Parse(await result.Content.ReadAsStringAsync());
+        }
+
+        public async Task<bool> AddProductImage(MultipartFormDataContent content, int productId, string userId, bool main = false)
+        {
+            var result = await Client.PostAsync($"api/admin/products/{productId}/addimage/{main}?userid={userId}", content);
+            return result.IsSuccessStatusCode;
+        }
+
+        public async Task<ProductDetailsWithSize?> GetProductWithSize(int productId, string userId)
+        {
+            return await Client.GetFromJsonAsync<ProductDetailsWithSize>($"api/admin/products/{productId}?userid={userId}");
         }
     }
 }

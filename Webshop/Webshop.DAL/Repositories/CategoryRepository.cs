@@ -11,6 +11,22 @@ namespace Webshop.DAL.Repositories
         public CategoryRepository(WebshopDbContext dbContext)
             => this.dbContext = dbContext;
 
+        public async Task<Models.Category?> GetByIdOrNull(int id)
+        {
+            var dbRecord = await dbContext.Category.GetByIdOrNull(id);
+            if (dbRecord != null)
+	        {
+                return dbRecord.GetCategory();
+		    }
+            return null;
+        }
+
+        public async Task<IReadOnlyCollection<Models.Category>> ListCategories()
+        {
+            return await dbContext.Category
+                            .GetCategories();
+        }
+
         public async Task<IReadOnlyCollection<Models.Category>> ListMainCategories()
         {
             return await dbContext.Category
@@ -22,9 +38,9 @@ namespace Webshop.DAL.Repositories
         {
             var parentCategory = await dbContext.Category
                                     .GetByIdOrNull(parentCategoryId);
-            if(parentCategory == null)
+            if (parentCategory == null)
             {
-                return Array.Empty<Models.Category>();
+                throw new Exception("parentcategory not found");
             }
             else
             {
@@ -48,5 +64,6 @@ namespace Webshop.DAL.Repositories
                         .GetIds();
             }
         }
+
     }
 }

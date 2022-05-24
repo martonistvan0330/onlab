@@ -1,0 +1,29 @@
+﻿<div class="row">
+    <form @onsubmit="(args) => ProcessPaymentAsync()">
+    <div class="col-sm-3 col-lg-3 col-md-3">
+        <div class="form-group">
+            <label for="card-element">Card Information</label>
+            <div id="card-element" style="display: block;
+                                          width: 100%;
+                                          padding: 0.52rem  .75rem;
+                                          font-size: 1rem;
+                                          line-height: 1.5;
+                                          color: #495057;
+                                          background-color: #fff;
+                                          background-clip: padding-box;
+                                          border: 1px solid #ced4da;
+                                          border-radius: .25rem;
+                                          transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">
+            </div>
+            <div id="card-element-errors" role="alert" color="red"></div>
+            <div style="height:10px">
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 col-lg-3 col-md-3">
+
+        <button type="submit" style="margin-top: 30px;" class="btn btn-primary">Pay</button>
+
+    </div>
+    </form>
+</div>

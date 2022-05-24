@@ -21,6 +21,16 @@ namespace Webshop.DAL.Repositories
             return await dbContext.Customer.ExistsById(customerId, userId);
         }
 
+        public async Task<Models.Customer> GetById(int customerId, string userId)
+        {
+            var customer = await dbContext.Customer.WithShippingInfo()
+                                           .WithPaymentInfo()
+                                           .FilterByUser(userId)
+                                           .FindById(customerId)
+                                           .GetCustomerOrNull();
+            return customer.GetCustomer();
+        }
+
         /*public async Task<IReadOnlyCollection<Models.Customer>> ListCustomers(int userId)
         {
 
@@ -33,30 +43,40 @@ namespace Webshop.DAL.Repositories
 
         public async Task<(bool, int)> AddCustomer(Models.Customer customer, int shippingInfoId, int paymentInfoId, string userId)
         {
-            var dbCustomer = new Customer()
+            var dbCustomer = await dbContext.Customer.GetCustomerByNameOrNull(customer.Name, userId);
+            if (dbCustomer == null)
             {
-                UserId = userId,
-                Name = customer.Name,
-                ShippingInfoId = shippingInfoId,
-                PaymentInfoId = paymentInfoId,
-                MainCustomer = false,
-            };
-            if (await dbContext.Customer.ExistsByName(customer.Name, userId))
-            {
-                return (false, -1);
+                dbCustomer = new Customer()
+                {
+                    UserId = userId,
+                    Name = customer.Name,
+                    ShippingInfoId = shippingInfoId,
+                    PaymentInfoId = paymentInfoId,
+                    MainCustomer = false,
+                };
+                dbContext.Customer.Add(dbCustomer);
             }
             else
             {
-                dbContext.Customer.Add(dbCustomer);
-                try
+                if (dbCustomer.ShippingInfoId == shippingInfoId && dbCustomer.PaymentInfoId == paymentInfoId)
                 {
-                    await dbContext.SaveChangesAsync();
                     return (true, dbCustomer.Id);
                 }
-                catch
+                else
                 {
-                    return (false, -1);
+                    dbCustomer.ShippingInfoId = shippingInfoId;
+                    dbCustomer.PaymentInfoId = paymentInfoId;
+                    dbContext.Customer.Add(dbCustomer);
                 }
+            }
+            try
+            {
+                await dbContext.SaveChangesAsync();
+                return (true, dbCustomer.Id);
+            }
+            catch
+            {
+                return (false, -1);
             }
         }
 

@@ -1,0 +1,88 @@
+﻿@page "/order/{orderId:int}"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+
+@attribute [Authorize]
+
+@inject PrivateClient client
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Order</h3>
+
+@if (order == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<h4>Email: @order.Email</h4>
+	<h4>Shipping Method: @order.ShippingMethod</h4>
+	<h4>Shipping Address:</h4>
+	<AddressInfoView AddressInfo=@order.ShippingAddressInfo></AddressInfoView>
+	<h4>Payment Method: @order.PaymentMethod</h4>
+	<h4>Billing Address:</h4>
+	<AddressInfoView AddressInfo=@order.BillingAddressInfo></AddressInfoView>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Image</th>
+				<th>Name</th>
+				<th>Size</th>
+				<th>Amount</th>
+				<th>Price</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var orderItem in order.OrderItems)
+			{
+				<tr>
+					<td><img class="img-thumbnail" src="@ConvertImageToDisplay(orderItem.Image)" width="200"></td>
+					<td>@orderItem.ProductName</td>
+					<td>@orderItem.SizeName</td>
+					<td>@orderItem.Amount</td>
+					<td>@orderItem.Price</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+	<h4>Total: @order.Total</h4>
+}
+
+@code {
+	private OrderDetails order;
+
+	private string userId;
+
+	[Parameter]
+	public int OrderId { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == "sub")?.Value;
+		try
+		{
+			order = await client.GetOrderDetails(OrderId, userId);
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	private string ConvertImageToDisplay(byte[] image)
+	{
+		if (image != null)
+		{
+			var base64 = Convert.ToBase64String(image);
+			var fs = string.Format("data:image/png;base64,{0}", base64);
+			return fs;
+		}
+		return "";
+	}
+}

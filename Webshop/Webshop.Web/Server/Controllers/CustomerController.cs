@@ -14,23 +14,23 @@ namespace Webshop.Web.Server.Controllers
             this.customerManager = customerManager;
         }
 
-        /*[HttpGet]
+        [HttpGet("{customerId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers([FromQuery] string sessionId)
+        public async Task<ActionResult<Customer>> GetCustomer([FromRoute] int  customerId, [FromQuery] string userId)
         {
-            if (await customerManager.ValidateSessionId(sessionId))
+            var customer = await customerManager.GetById(customerId, userId);
+            if (customer != null)
             {
-                var customers = await customerManager.ListCustomers(sessionId);
-                return Ok(customers);
+                return Ok(customer);
             }
             else
             {
-                return NotFound("invalid sessionID");
+                return NotFound();
             }
         }
 
-        [HttpPut]
+        /*[HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
@@ -66,26 +66,17 @@ namespace Webshop.Web.Server.Controllers
 
         [HttpPost]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
         [ProducesResponseType(409)]
         public async Task<ActionResult<int>> AddCustomer([FromBody] Customer customer, [FromQuery] string userId)
         {
-            if (await customerManager.ExistsByName(customer.Name, userId))
+            var (success, customerId) = await customerManager.TryAddCustomerWithAll(customer, userId);
+            if (success)
             {
-                return BadRequest(-1);
+                return Ok(customerId);
             }
             else
             {
-                var (success, customerId) = await customerManager.TryAddCustomerWithAll(customer, userId);
-                if (success)
-                {
-                    return Ok(customerId);
-                }
-                else
-                {
-                    return Conflict(-1);
-                }
+                return Conflict();
             }
         }
     }

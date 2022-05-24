@@ -4,12 +4,12 @@
     {
         public Cart()
         {
-            Items = new HashSet<CartItem>();
+            CartItems = new HashSet<CartItem>();
         }
 
         public int Id { get; set; }
         public string UserId { get; set; }
 
-        public ICollection<CartItem> Items { get; set; }
+        public ICollection<CartItem> CartItems { get; set; }
     }
 }

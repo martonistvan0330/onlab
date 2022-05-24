@@ -1,0 +1,23 @@
+﻿table {
+    max-width: 900px;
+}
+
+.name {
+    width: 30%;
+}
+
+.size {
+    width: 15%;
+}
+
+.amount {
+    width: 20%;
+}
+
+.price {
+    width: 20%;
+}
+
+.delete {
+    width: 15px
+}

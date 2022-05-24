@@ -1,0 +1,232 @@
+﻿@page "/admin/products/{productId:int}"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Net.Http.Headers
+@using Webshop.Web.Client.Clients
+@using Webshop.Web.Shared.Models
+@using Webshop.Web.Client.Components
+
+@attribute [Authorize]
+
+@inject PrivateClient privateClient
+@inject PublicClient publicClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
+
+<div class="page">
+    @if (product != null)
+    {
+		var productDetails = product.ProductDetails;
+        <AdminView ErrorText="You are not an admin">
+			<div class="images">
+				<div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="carousel">
+					<div class="carousel-indicators">
+						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+						@for (int i = 1; i <= productDetails.Images.Count; i++)
+						{
+							<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" aria-label="Slide"></button>	
+						}
+					</div>
+					<div class="carousel-inner">
+						<div class="carousel-item active">
+							<img src="@ConvertImageToDisplay(productDetails.MainImage)" class="d-block w-100 bg-light">
+						</div>
+						@foreach (var image in productDetails.Images)
+						{
+							<div class="carousel-item">
+								<img src="@ConvertImageToDisplay(image)" class="d-block w-100 bg-light">
+							</div>
+						}
+					</div>
+					<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+						<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Previous</span>
+					</button>
+					<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+						<span class="carousel-control-next-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Next</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="details">
+				<EditForm EditContext=editContext OnSubmit="@HandleSubmit">
+					<DataAnnotationsValidator/>
+					<label class="form-label">
+						Name
+						<InputText @bind-Value=newProduct.Name DisplayName="Product Name" class="form-control"/>
+						<ValidationMessage For="@(() => newProduct.Name)" />
+					</label>
+					<label class="form-label">
+						Price
+						<InputNumber @bind-Value=newProduct.Price class="form-control" min=1000 max=200000 step=1000/>
+						<ValidationMessage For="@(() => newProduct.Price)" />
+					</label>
+					<label class="form-label">
+						Images
+						<InputFile OnChange="@OnInputFileChange" DisplayName="Image" class="form-control" accept="image/png"></InputFile>
+						<p>@ImageError</p>
+						<button class="btn btn-success" @onclick="(args) => AddImage(args)" type="button">Add Image</button>
+					</label>
+					<label class="form-label">
+						Category
+						<InputSelect @bind-Value="@newProduct.CategoryId" class="form-select">
+							@foreach (var category in categories)
+							{
+								<option value="@category.Id">@category.Name</option>
+							}
+						</InputSelect>
+					</label>
+					<label class="form-label">
+						XS
+						<InputNumber @bind-Value=newProduct.XS class="form-control" min=0 max=100/>
+						<ValidationMessage For="@(() => newProduct.XS)" />
+					</label>
+					<label class="form-label">
+						S
+						<InputNumber @bind-Value=newProduct.S class="form-control" min=0 max=100/>
+						<ValidationMessage For="@(() => newProduct.S)" />
+					</label>
+					<label class="form-label">
+						M
+						<InputNumber @bind-Value=newProduct.M class="form-control" min=0 max=100/>
+						<ValidationMessage For="@(() => newProduct.M)" />
+					</label>
+					<label class="form-label">
+						L
+						<InputNumber @bind-Value=newProduct.L class="form-control" min=0 max=100/>
+						<ValidationMessage For="@(() => newProduct.L)" />
+					</label>
+					<label class="form-label">
+						XL
+						<InputNumber @bind-Value=newProduct.XL class="form-control" min=0 max=100/>
+						<ValidationMessage For="@(() => newProduct.XL)" />
+					</label>
+					<label class="form-label">
+						XXL
+						<InputNumber @bind-Value=newProduct.XXL class="form-control" min=0 max=100/>
+						<ValidationMessage For="@(() => newProduct.XXL)" />
+					</label>
+					<button class="btn btn-success btn-lg" type="submit">Update Product</button>
+				</EditForm>
+			</div>
+		</AdminView>
+    }
+    else
+    {
+        <p>Loading...</p>
+    }
+</div>
+
+
+@code {
+	[Parameter]
+	public int ProductId { get; set; }
+
+	private ProductDetailsWithSize product;
+
+	private Category[]? categories;
+
+	private NewProduct newProduct = new NewProduct();
+
+	private string userId;
+
+	private IBrowserFile file;
+
+	private EditContext? editContext;
+
+	private const long maxFileSize = 1024 * 1024 * 100;
+
+	private string ImageError;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == "sub")?.Value;
+		editContext = new(newProduct);
+		categories = await publicClient.GetCategories();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		product = await privateClient.GetProductWithSize(ProductId, userId);
+		newProduct.Name = product.ProductDetails.Name;
+		newProduct.Price = product.ProductDetails.Price;
+		newProduct.CategoryId = product.ProductDetails.CategoryId;
+		newProduct.XS = product.XS;
+		newProduct.S = product.S;
+		newProduct.M = product.M;
+		newProduct.L = product.L;
+		newProduct.XL = product.XL;
+		newProduct.XXL = product.XXL;
+	}
+
+	private async Task OnInputFileChange(InputFileChangeEventArgs e)
+	{
+		if (e.File.ContentType.Contains("png"))
+		{
+			file = e.File;
+			ImageError = "";
+		}
+		else
+		{
+			ImageError = "not a png";
+		}
+	}
+
+	private async Task AddImage(MouseEventArgs args)
+	{
+		if (string.IsNullOrEmpty(ImageError) &&
+			file != null &&
+			!string.IsNullOrEmpty(file.Name))
+		{
+			using var content = new MultipartFormDataContent();
+
+			try
+			{
+				var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+				fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+				content.Add(
+					content: fileContent,
+					name: "\"files\"",
+					fileName: file.Name);
+				await privateClient.AddProductImage(content, ProductId, userId);
+				product = await privateClient.GetProductWithSize(ProductId, userId);
+			}
+			catch
+			{
+				ImageError = "something went wrong";
+			}
+		}
+	}
+
+	private async Task HandleSubmit()
+	{
+		if (editContext != null && 
+			editContext.Validate())
+		{
+			var productId = await privateClient.UpdateProduct(newProduct, ProductId, userId);
+			if (productId > 0)
+			{
+				NavManager.NavigateTo($"/admin/products/{productId}");
+			}
+			else
+			{
+				NavManager.NavigateTo($"/error");
+			}
+		}
+	}
+
+	private string ConvertImageToDisplay(byte[] image)
+	{
+		if (image != null)
+		{
+			var base64 = Convert.ToBase64String(image);
+			var fs = string.Format("data:image/png;base64,{0}", base64);
+			return fs;
+		}
+		return "";
+	}
+}

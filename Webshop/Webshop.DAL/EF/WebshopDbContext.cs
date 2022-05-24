@@ -87,7 +87,7 @@ namespace Webshop.DAL.EF
                 entity.Property(e => e.SizeId).HasColumnName("SizeID");
 
                 entity.HasOne(d => d.Cart)
-                    .WithMany(p => p.Items)
+                    .WithMany(p => p.CartItems)
                     .HasForeignKey(d => d.CartId);
 
                 entity.HasOne(d => d.Product)
@@ -224,7 +224,8 @@ namespace Webshop.DAL.EF
 
                 entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
-                entity.Property(e => e.ImageSource).HasMaxLength(100);
+                entity.Property(e => e.FileName).HasMaxLength(100);
+                entity.Property(e => e.Image).HasColumnType("image");
                 entity.Property(e => e.MainImage).HasColumnType("bit");
 
                 entity.HasOne(d => d.Product)
